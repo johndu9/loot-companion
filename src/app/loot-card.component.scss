@@ -1,0 +1,84 @@
+@import "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined";
+
+.loot-card {
+  width: 320px;
+
+  &.loot-drained {
+    background: repeating-linear-gradient(
+      45deg,
+      #e0e2ec,
+      #e0e2ec 5%,
+      #c4c6d0 5%,
+      #c4c6d0 10%
+    );
+  }
+
+  mat-card-title {
+    margin-bottom: 6px;
+    background-color: #faf9fd;
+    border-radius: 8px;
+    border: solid 1px #c4c6d0;
+    width: 288px;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+
+    span.loot-name {
+      padding: 4px 8px 4px 8px !important;
+      max-width: 238px;
+    }
+
+    mat-icon {
+      padding: 6px 8px 0 0;
+      color: #74777f;
+    }
+  }
+  mat-card-subtitle {
+    margin-bottom: 6px;
+    background-color: #faf9fd;
+    border-radius: 8px;
+    width: fit-content;
+    span.loot-subtitle-text {
+      padding: 4px 8px 4px 8px !important;
+    }
+  }
+
+  mat-card-content {
+    margin: 0 16px 6px;
+    background-color: #faf9fd;
+    padding: 8px;
+    border-radius: 8px;
+
+    hr {
+      color: #e0e2ec;
+    }
+
+    .loot-desc-header {
+      margin: 0 0 8px 0;
+    }
+
+    .loot-basic,
+    .loot-charged,
+    .loot-description {
+      p {
+        margin: 0 0 8px 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  mat-card-footer {
+    padding: 0 16px 16px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    button {
+      flex-grow: 1;
+    }
+  }
+}

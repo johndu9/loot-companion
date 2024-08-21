@@ -1,0 +1,39 @@
+<mat-card class="loot-card" [ngClass]="cardType === t.CHARGE && hasCharged && !isCharged ? 'loot-drained' : ''" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>
+      <span class="loot-name">{{loot.name}}</span>
+      <mat-icon class="material-symbols-outlined">{{typeToIcon(loot.type)}}</mat-icon></mat-card-title>
+    <mat-card-subtitle>
+      <span class="loot-subtitle-text">{{cardTraits}}</span>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="hasDescription" class="loot-description" [innerHtml]="md(loot.description)"></div>
+    <div *ngIf="hasBasic">
+      <br *ngIf="hasDescription" />
+      <h4 class="loot-desc-header">Basic:</h4>
+      <div class="loot-basic" [innerHTML]="md(loot.basic)"></div>
+    </div>
+    <div *ngIf="hasCharged">
+      <br *ngIf="hasBasic || hasDescription" />
+      <h4 class="loot-desc-header">Charged:</h4>
+      <div class="loot-charged" [innerHTML]="md(loot.charged)"></div>
+    </div>
+  </mat-card-content>
+  <mat-card-footer *ngIf="hasFooter" class="loot-footer">
+    <ng-container *ngIf="cardType === t.CHARGE">
+      <button *ngIf="hasCharged && isCharged" mat-flat-button (click)="useCharge.emit(loot.name)">
+        <mat-icon class="material-symbols-outlined">bolt</mat-icon>
+        Use charge
+      </button>
+      <button *ngIf="hasCharged && !isCharged" mat-flat-button (click)="restoreCharge.emit(loot.name)">
+        <mat-icon class="material-symbols-outlined">replay</mat-icon>
+        Restore charge
+      </button>
+    </ng-container>
+    <button *ngIf="cardType === t.SELECT" mat-flat-button (click)="select.emit(loot.name)">
+      <mat-icon class="material-symbols-outlined">add_circle</mat-icon>
+      Select
+    </button>
+  </mat-card-footer>
+</mat-card>
