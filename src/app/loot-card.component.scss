@@ -30,8 +30,22 @@
     }
 
     mat-icon {
-      padding: 6px 8px 0 0;
-      color: #74777f;
+      margin: 2px 2px 0 0;
+      padding: 4px;
+      border-radius: 50%;
+
+      &.weapon {
+        background-color: rgb(242, 105, 137, 0.5);
+      }
+      &.clothing {
+        background-color: rgb(160, 158, 187, 0.5);
+      }
+      &.magic-item {
+        background-color: rgb(250, 227, 15, 0.5);
+      }
+      &.consumable {
+        background-color: rgb(3, 206, 164, 0.5);
+      }
     }
   }
   mat-card-subtitle {

@@ -89,5 +89,9 @@ export enum LootCardType {
           return 'question_mark';
       }
     }
+
+    typeToClass(type: LootType) {
+      return type.replace(' ', '-').toLowerCase();
+    }
   }
   
