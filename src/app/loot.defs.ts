@@ -5,13 +5,6 @@ export enum LootType {
   CONSUMABLE = 'Consumable'
 }
 
-export enum LootSource {
-  INITIATE = 'Initiate',
-  CONSUMABLE = 'Consumable',
-  STARTER = 'Starter',
-  CITY = 'City'
-}
-
 export class Loot {
   public basic: string;
   public charged: string;
@@ -19,7 +12,7 @@ export class Loot {
   constructor (
     public name: string,
     public type: LootType,
-    public sourcePool: LootSource,
+    public sourcePool: string,
     { basic, charged, description }: { basic?: string, charged?: string, description?: string }
   ) {
     this.basic = basic ?? '';
@@ -33,7 +26,7 @@ export class Consumable extends Loot {
     name: string,
     description: string
   ) {
-    super(name, LootType.CONSUMABLE, LootSource.CONSUMABLE, { description: description });
+    super(name, LootType.CONSUMABLE, 'Consumable', { description: description });
   }
 }
 
@@ -76,63 +69,64 @@ export class Player {
   set focusMax(value: number) { this.setMax(PlayerStat.FOCUS, value); }
   get focusCurrent() { return this.getCurrent(PlayerStat.FOCUS); }
   set focusCurrent(value: number) { this.setCurrent(PlayerStat.FOCUS, value); }
-  addLoot(lootName: string) { this.setLootCharge(lootName, true); }
-  setLootCharge(lootName: string, isCharged: boolean) { this.loot[lootName] = isCharged; }
+  addLoot(lootName: string) { this.loot[lootName] = true; }
+  hasLoot(lootName: string) { return Object.hasOwn(this.loot, lootName); }
+  setLootCharged(lootName: string, isCharged: boolean) { if (this.hasLoot(lootName)) this.loot[lootName] = isCharged; }
   isCharged(lootName: string) { return this.loot[lootName]; }
   removeLoot(lootName: string) { delete this.loot[lootName]; }
 }
 
 export const DEFAULT_LOOTS: Loot[] = [
-  new Loot('Simple Sword', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Simple Sword', LootType.WEAPON, 'Initiate', {
     basic: 'Range 1, Harm 1',
     charged: 'Range 1, Harm 2'
   }),
-  new Loot('Shield', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Shield', LootType.WEAPON, 'Initiate', {
     charged: 'Range 1, *Stuns* enemy (-1 action next turn)',
     description: '+1 Armor'
   }),
-  new Loot('Flame Aura', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Flame Aura', LootType.WEAPON, 'Initiate', {
     charged: 'Range 1-2. Deal 1 Harm to ALL characters within range.'}),
-  new Loot('Bow', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Bow', LootType.WEAPON, 'Initiate', {
     basic: 'Range 3, Harm 1.',
     charged: 'Harm 1 to all enemies in a straight line up to 3 spaces from you.'
   }),
-  new Loot('Dagger', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Dagger', LootType.WEAPON, 'Initiate', {
     basic: 'Range 0, Harm 1',
     charged: 'Range 2, Harm 2'}),
-  new Loot('Magic Missile', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Magic Missile', LootType.WEAPON, 'Initiate', {
     basic: 'Range 2-3, Harm 1',
     charged: 'Range 2-3, Harm 1, choose up to 3 targets'
   }),
-  new Loot('Shiv', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Shiv', LootType.WEAPON, 'Initiate', {
     basic: 'Range 1, Harm 1',
     charged: 'Range 1, Harm 1, *Bleed* (1 Harm start of each turn)'
   }),
-  new Loot('Razor Trap', LootType.WEAPON, LootSource.INITIATE, {
+  new Loot('Razor Trap', LootType.WEAPON, 'Initiate', {
     charged: 'Choose an empty space at Range 1 to place the trap.\n\nThe next enemy that moves onto that space takes Harm 2.'
   }),
-  new Loot('Iron Plate', LootType.CLOTHING, LootSource.INITIATE, {
+  new Loot('Iron Plate', LootType.CLOTHING, 'Initiate', {
     description: '+3 Health, +1 Armor'
   }),
-  new Loot('Cloak', LootType.CLOTHING, LootSource.INITIATE, {
+  new Loot('Cloak', LootType.CLOTHING, 'Initiate', {
     description: '+2 Health, +1 Armor\n\n+1 Flow'
   }),
-  new Loot('Robe', LootType.CLOTHING, LootSource.INITIATE, {
+  new Loot('Robe', LootType.CLOTHING, 'Initiate', {
     description: '+1 Health\n\n+1 Flow\n\n+2 Focus'
   }),
-  new Loot('Hunters Vest', LootType.CLOTHING, LootSource.INITIATE, {
+  new Loot('Hunters Vest', LootType.CLOTHING, 'Initiate', {
     description: '+3 Health\n\n+1 Force'
   }),
-  new Loot('Giants Ring', LootType.MAGIC_ITEM, LootSource.INITIATE, {
+  new Loot('Giants Ring', LootType.MAGIC_ITEM, 'Initiate', {
     description: '+1 Health\n\n+1 Force'
   }),
-  new Loot('Owl Stone', LootType.MAGIC_ITEM, LootSource.INITIATE, {
+  new Loot('Owl Stone', LootType.MAGIC_ITEM, 'Initiate', {
     description: '+1 Flow'
   }),
-  new Loot('Time Orb', LootType.MAGIC_ITEM, LootSource.INITIATE, {
+  new Loot('Time Orb', LootType.MAGIC_ITEM, 'Initiate', {
     charged: 'You and one ally within Range 2 may reset all of your drained loot (except this one).'
   }),
-  new Loot('Lure', LootType.MAGIC_ITEM, LootSource.INITIATE, {
+  new Loot('Lure', LootType.MAGIC_ITEM, 'Initiate', {
     charged: 'Range 4-5. Choose an enemy. They will move in a straight line towards you up to their movement.'
   }),
   new Consumable('Healing Potion',
@@ -149,83 +143,83 @@ export const DEFAULT_LOOTS: Loot[] = [
     'Temporarily grants the ability to climb on walls and ceilings.'),
   new Consumable('Beast Friend',
     'Nearby creatures will provided temporary assistance to you.'),
-  new Loot('Iron Spear', LootType.WEAPON, LootSource.STARTER, {
+  new Loot('Iron Spear', LootType.WEAPON, 'Starter', {
     basic: 'Range 2, Harm 1',
     charged: 'Move 1, Range 2, Harm 3'
   }),
-  new Loot('Tower Shield', LootType.WEAPON, LootSource.STARTER, {
+  new Loot('Tower Shield', LootType.WEAPON, 'Starter', {
     description: '+1 Health, +2 Armor'
   }),
-  new Loot('Sling', LootType.WEAPON, LootSource.STARTER, {
+  new Loot('Sling', LootType.WEAPON, 'Starter', {
     basic: 'Range 2-3, Harm 1',
     charged: 'Range 2-3, Harm 1, *AOE* (Harm all characters Range 1 from target).'
   }),
-  new Loot('Simple Crossbow', LootType.WEAPON, LootSource.STARTER, {
+  new Loot('Simple Crossbow', LootType.WEAPON, 'Starter', {
     basic: 'Range 3-4, Harm 1',
     charged: '2 Harm to all enemies in a straight line from you'
   }),
-  new Loot('Delver Armor', LootType.CLOTHING, LootSource.STARTER, {
+  new Loot('Delver Armor', LootType.CLOTHING, 'Starter', {
     description: '+1 Health, +1 Armor\n\n+1 Force, +1 Flow, +1 Focus'
   }),
-  new Loot('Scholars Robes', LootType.CLOTHING, LootSource.STARTER, {
+  new Loot('Scholars Robes', LootType.CLOTHING, 'Starter', {
     description: '+3 Focus'
   }),
-  new Loot('Simple Plate', LootType.CLOTHING, LootSource.STARTER, {
+  new Loot('Simple Plate', LootType.CLOTHING, 'Starter', {
     description: '+2 Health, +2 Armor\n\n+1 Force'
   }),
-  new Loot('Skulking Cloak', LootType.CLOTHING, LootSource.STARTER, {
+  new Loot('Skulking Cloak', LootType.CLOTHING, 'Starter', {
     description: '+2 Flow, +1 Focus'
   }),
-  new Loot('Amulet of Body', LootType.MAGIC_ITEM, LootSource.STARTER, {
+  new Loot('Amulet of Body', LootType.MAGIC_ITEM, 'Starter', {
     description: '+3 Health'
   }),
-  new Loot('Amplifier', LootType.MAGIC_ITEM, LootSource.STARTER, {
+  new Loot('Amplifier', LootType.MAGIC_ITEM, 'Starter', {
     description: 'Choose any number on a piece of loot you have equipped.\n\nIncrease it +1.'
   }),
-  new Loot('Lying Cat', LootType.MAGIC_ITEM, LootSource.STARTER, {
+  new Loot('Lying Cat', LootType.MAGIC_ITEM, 'Starter', {
     description: 'As long as you have more than 1 Focus remaining, you can always detect when someone is lying to you.'
   }),
-  new Loot('Silken Scarf', LootType.MAGIC_ITEM, LootSource.STARTER, {
+  new Loot('Silken Scarf', LootType.MAGIC_ITEM, 'Starter', {
     description: 'As long as you have more than 1 Flow remaining, you can walk on walls.'
   }),
-  new Loot('Banish', LootType.WEAPON, LootSource.CITY, {
+  new Loot('Banish', LootType.WEAPON, 'City', {
     charged: 'Range 1. Target disappears from the grid. They return to their same space at the end of the next round.'
   }),
-  new Loot('Inferno', LootType.WEAPON, LootSource.CITY, {
+  new Loot('Inferno', LootType.WEAPON, 'City', {
     charged: 'Deal 2 Harm to all characters (except you) who share the same row and column as you.'
   }),
-  new Loot('Axe', LootType.WEAPON, LootSource.CITY, {
+  new Loot('Axe', LootType.WEAPON, 'City', {
     basic: 'Range 1, Harm 1',
     charged: 'Range 1, Harm 1, affects all enemies in range.'
   }),
-  new Loot('Hammer', LootType.WEAPON, LootSource.CITY, {
+  new Loot('Hammer', LootType.WEAPON, 'City', {
     basic: 'Range 1, Harm 2',
     charged: '1 Harm to all enemies in a straight line up to 3 spaces away.'
   }),
-  new Loot('Tahnlian Scale', LootType.CLOTHING, LootSource.CITY, {
+  new Loot('Tahnlian Scale', LootType.CLOTHING, 'City', {
     description: '+3 Health, +1 Armor\n\n+1 Force, +1 Flow, +1 Focus'
   }),
-  new Loot('Spectral Shirt', LootType.CLOTHING, LootSource.CITY, {
+  new Loot('Spectral Shirt', LootType.CLOTHING, 'City', {
     description: '+0 Health, +1 Armor\n\n-1 Force, +3 Flow\n\nOnce per quest, you may walk through any solid wall.'
   }),
-  new Loot('Shapers Shirt', LootType.CLOTHING, LootSource.CITY, {
+  new Loot('Shapers Shirt', LootType.CLOTHING, 'City', {
     charged: 'Tunnel through the ground, moving to any other open space on the grid.',
     description: '+2 Health, +1 Armor'
   }),
-  new Loot('Pact Bound Hide', LootType.CLOTHING, LootSource.CITY, {
+  new Loot('Pact Bound Hide', LootType.CLOTHING, 'City', {
     charged: 'Use 1 Focus. You may recover 3 Health.',
     description: '+1 Health\n\n+1 Flow, +2 Focus'
   }),
-  new Loot('Remixer', LootType.MAGIC_ITEM, LootSource.CITY, {
+  new Loot('Remixer', LootType.MAGIC_ITEM, 'City', {
     description: 'You may freely move points between your Health and your Approaches at any time.'
   }),
-  new Loot('Skull of Lore', LootType.MAGIC_ITEM, LootSource.CITY, {
+  new Loot('Skull of Lore', LootType.MAGIC_ITEM, 'City', {
     description: '+2 Focus'
   }),
-  new Loot('Blink Ring', LootType.MAGIC_ITEM, LootSource.CITY, {
+  new Loot('Blink Ring', LootType.MAGIC_ITEM, 'City', {
     charged: 'Move to any empty space on the grid. It must be at least 4 spaces away.'
   }),
-  new Loot('Healing Orb', LootType.MAGIC_ITEM, LootSource.CITY, {
+  new Loot('Healing Orb', LootType.MAGIC_ITEM, 'City', {
     charged: 'Heals ALL characters 2 within Range 3.'
   })
 ];
