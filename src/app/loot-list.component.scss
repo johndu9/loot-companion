@@ -1,0 +1,37 @@
+.loot-filter-list {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.loot-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 0 8px;
+  width: calc(100vw - 16px);
+
+  .loot-filter-category {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .loot-filter-string {
+    max-width: 648px;
+    margin-bottom: -20px; // account for hint text that we don't use
+    width: 100%;
+  }
+}
+
+.loot-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px;
+  overflow-y: scroll;
+}

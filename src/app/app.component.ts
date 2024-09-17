@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DEFAULT_LOOTS, Loot } from './loot.defs.js';
-import { NgFor } from '@angular/common';
-import { LootCardComponent, LootCardType } from "./loot-card.component";
+import { DEFAULT_LOOTS, Loot, Player } from './loot.defs.js';
+import { LootCardType } from "./loot-card.component";
+import { LootListComponent } from "./loot-list.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgFor, LootCardComponent],
+  imports: [RouterOutlet, LootListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   title = 'loot-companion';
   loots: Loot[] = [];
   t = LootCardType;
+  p?: Player;
   
   ngOnInit(): void {
     this.initLootDefs();
