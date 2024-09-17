@@ -2,13 +2,10 @@ import { Component, EventEmitter, Input, Output, ViewEncapsulation } from "@angu
 import { Loot, LootType } from "./loot.defs";
 import { NgIf, NgClass } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
-import { MatChipsModule } from "@angular/material/chips";
 import { MatButtonModule } from "@angular/material/button";
-import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatIconModule } from '@angular/material/icon';
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import { FormsModule } from "@angular/forms";
 
 export enum LootCardType {
   CHARGE = 'charge',
@@ -19,7 +16,7 @@ export enum LootCardType {
 @Component({
     selector: 'loot-card',
     standalone: true,
-    imports: [NgIf, NgClass, FormsModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatSlideToggleModule],
+    imports: [NgIf, NgClass, MatCardModule, MatButtonModule, MatIconModule],
     encapsulation: ViewEncapsulation.ShadowDom, // needed for span spacing
     templateUrl: './loot-card.component.html',
     styleUrl: './loot-card.component.scss'
