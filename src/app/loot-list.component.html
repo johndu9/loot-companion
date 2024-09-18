@@ -3,8 +3,11 @@
     @if (isFilterable) {
       <div class="filter-drawer">
         <div class="loot-filter">
+          <button class="loot-filter-close" mat-icon-button (click)="drawer.close()">
+            <mat-icon class="material-symbols-outlined">close</mat-icon>
+          </button>
           <div class="loot-filter-category">
-            <span>Types:</span>
+            <h4>Types:</h4>
             <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
               @for (t of filterTypes; track $index) {
                 <mat-chip-option selectable>
@@ -14,7 +17,7 @@
             </mat-chip-listbox>
           </div>
           <div class="loot-filter-category">
-            <span>Sources:</span>
+            <h4>Sources:</h4>
             <mat-chip-listbox [multiple]="true" [value]="selectedSources" (change)="selectedSources = $event.value">
               @for (s of filterSources; track $index) {
                 <mat-chip-option selectable>

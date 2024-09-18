@@ -1,7 +1,10 @@
 @import "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined";
 
+$card-w: 280px;
+
 .loot-card {
-  width: 320px;
+  width: $card-w;
+  min-height: $card-w;
 
   &.loot-drained {
     background: repeating-linear-gradient(
@@ -18,7 +21,7 @@
     background-color: #faf9fd;
     border-radius: 8px;
     border: solid 1px #c4c6d0;
-    width: 288px;
+    width: calc($card-w - 36px);
     display: flex;
     flex-direction: row;
     align-items: start;
@@ -26,7 +29,7 @@
 
     span.loot-name {
       padding: 4px 8px 4px 8px !important;
-      max-width: 238px;
+      max-width: calc($card-w - 36px - 50px);
     }
 
     mat-icon {
@@ -90,6 +93,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-grow: 1;
+    align-items: end;
 
     button {
       flex-grow: 1;

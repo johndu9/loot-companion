@@ -5,6 +5,10 @@ mat-drawer-container {
   height: 100vh;
 }
 
+mat-drawer {
+  width: fit-content !important;
+}
+
 .filter-drawer {
   display: flex;
   flex-direction: row;
@@ -15,15 +19,22 @@ mat-drawer-container {
     align-items: center;
     gap: 8px;
     padding: 8px;
-    min-width: 320px;
-    max-width: 320px;
+    width: 272px;
     background-color: #faf9fd;
+
+    .loot-filter-close {
+      align-self: end;
+    }
 
     .loot-filter-category {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       gap: 8px;
-      align-items: center;
+      align-items: start;
+
+      h4 {
+        margin-bottom: 0;
+      }
     }
 
     .loot-filter-string {
@@ -34,6 +45,7 @@ mat-drawer-container {
 
   hr {
     flex-grow: 0;
+    margin: 8px 0;
     color: #e0e2ec;
   }
 }
@@ -62,7 +74,7 @@ mat-drawer-container {
     width: calc(100% - 16px);
 
     &.thin-loot-list {
-      width: calc(100% - 384px);
+      width: calc(100% - 306px);
     }
   }
 }
