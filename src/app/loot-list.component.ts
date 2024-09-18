@@ -6,12 +6,13 @@ import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import {MatInputModule} from '@angular/material/input';
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'loot-list',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, MatIconModule, MatChipsModule, LootCardComponent],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, MatSidenavModule, MatIconModule, MatChipsModule, LootCardComponent],
   templateUrl: './loot-list.component.html',
   styleUrl: './loot-list.component.scss'
 })
@@ -45,6 +46,8 @@ export class LootListComponent implements OnInit {
   name: string = '';
   description: string = '';
 
+  isFilterOpen = false;
+
   isLootHidden(loot: Loot) {
     if (this.player) {
       return !this.player.hasLoot(loot.name);
@@ -68,5 +71,7 @@ export class LootListComponent implements OnInit {
     }
   }
 
-  // TODO: make loot-filter a sidenav
+  onFilterOpened(opened: boolean) {
+    this.isFilterOpen = opened;
+  }
 }

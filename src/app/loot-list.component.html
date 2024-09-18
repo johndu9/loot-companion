@@ -1,56 +1,71 @@
-<div class="loot-filter-list">
-  @if (isFilterable) {
-    <div class="loot-filter">
-      <div class="loot-filter-category">
-        <span>Types:</span>
-        <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
-          @for (t of filterTypes; track $index) {
-            <mat-chip-option selectable>
-              {{t}}
-            </mat-chip-option>
-          }
-        </mat-chip-listbox>
+<mat-drawer-container class="example-container" hasBackdrop="false">
+  <mat-drawer #drawer mode="push" (openedChange)="onFilterOpened($event)">
+    @if (isFilterable) {
+      <div class="filter-drawer">
+        <div class="loot-filter">
+          <div class="loot-filter-category">
+            <span>Types:</span>
+            <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
+              @for (t of filterTypes; track $index) {
+                <mat-chip-option selectable>
+                  {{t}}
+                </mat-chip-option>
+              }
+            </mat-chip-listbox>
+          </div>
+          <div class="loot-filter-category">
+            <span>Sources:</span>
+            <mat-chip-listbox [multiple]="true" [value]="selectedSources" (change)="selectedSources = $event.value">
+              @for (s of filterSources; track $index) {
+                <mat-chip-option selectable>
+                  {{s}}
+                </mat-chip-option>
+              }
+            </mat-chip-listbox>
+          </div>
+          <mat-form-field class="loot-filter-string">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" [(ngModel)]="name">
+            @if (name.length > 0) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="name=''">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          <mat-form-field class="loot-filter-string">
+            <mat-label>Description</mat-label>
+            <input matInput type="text" [(ngModel)]="description">
+            @if (description.length > 0) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="description=''">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+        </div>
+        <hr/>
       </div>
-      <div class="loot-filter-category">
-        <span>Sources:</span>
-        <mat-chip-listbox [multiple]="true" [value]="selectedSources" (change)="selectedSources = $event.value">
-          @for (s of filterSources; track $index) {
-            <mat-chip-option selectable>
-              {{s}}
-            </mat-chip-option>
-          }
-        </mat-chip-listbox>
-      </div>
-      <mat-form-field class="loot-filter-string">
-        <mat-label>Name</mat-label>
-        <input matInput type="text" [(ngModel)]="name">
-        @if (name.length > 0) {
-          <button matSuffix mat-icon-button aria-label="Clear" (click)="name=''">
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
-      <mat-form-field class="loot-filter-string">
-        <mat-label>Description</mat-label>
-        <input matInput type="text" [(ngModel)]="description">
-        @if (description.length > 0) {
-          <button matSuffix mat-icon-button aria-label="Clear" (click)="description=''">
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
-    </div>
-  }
-  <div class="loot-list">
-    @for (l of loots; track $index) {
-      <loot-card
-        [hidden]="isLootHidden(l)"
-        [loot]="l"
-        [cardType]="cardType"
-        [isCharged]="player ? (player.hasLoot(l.name) ? player.isCharged(l.name) : true) : true"
-        (useCharge)="setCharge($event, false)"
-        (restoreCharge)="setCharge($event, true)"
-        (select)="select.emit($event)" />
     }
-  </div>
-</div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="loot-drawer">
+      @if (isFilterable) {
+        <button class="loot-filter-expand" mat-flat-button (click)="drawer.toggle()">
+          <mat-icon class="material-symbols-outlined">tune</mat-icon>
+          Filter
+        </button>
+      }
+      <div class="loot-list" [class.thin-loot-list]="isFilterOpen">
+        @for (l of loots; track $index) {
+          <loot-card
+            [hidden]="isLootHidden(l)"
+            [loot]="l"
+            [cardType]="cardType"
+            [isCharged]="player ? (player.hasLoot(l.name) ? player.isCharged(l.name) : true) : true"
+            (useCharge)="setCharge($event, false)"
+            (restoreCharge)="setCharge($event, true)"
+            (select)="select.emit($event)" />
+        }
+      </div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
