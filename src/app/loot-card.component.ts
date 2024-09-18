@@ -17,7 +17,6 @@ export enum LootCardType {
   selector: 'loot-card',
   standalone: true,
   imports: [NgIf, NgClass, MatCardModule, MatButtonModule, MatIconModule],
-  encapsulation: ViewEncapsulation.ShadowDom, // needed for span spacing
   templateUrl: './loot-card.component.html',
   styleUrl: './loot-card.component.scss'
 })
@@ -69,7 +68,15 @@ export class LootCardComponent {
 
   md(input: string) {
     const output = marked.parse(input, { async: false });
-    return DOMPurify.sanitize(output, { ALLOWED_TAGS: ['p', 'em'] });
+    // replace <p> with <span> for CSS purposes
+    DOMPurify.addHook("uponSanitizeElement",
+      (n) => {
+        if (n.tagName?.toLowerCase() === 'p' && n.parentNode) {
+          n.outerHTML = n.outerHTML.replace(/^<p(.*)p>$/, '<span$1span>');
+        }
+      }
+    );
+    return DOMPurify.sanitize(output, { ALLOWED_TAGS: ['span', 'em'] });
   }
 
   typeToIcon(type: LootType) {

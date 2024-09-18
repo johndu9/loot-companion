@@ -4,20 +4,18 @@
       <span class="loot-name">{{loot.name}}</span>
       <mat-icon class="material-symbols-outlined" [ngClass]="typeToClass(loot.type)">{{typeToIcon(loot.type)}}</mat-icon></mat-card-title>
     <mat-card-subtitle>
-      <span class="loot-subtitle-text">{{cardTraits}}</span>
+      <span class="loot-subtitle-text mat-title-small">{{cardTraits}}</span>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div *ngIf="hasDescription" class="loot-description" [innerHtml]="md(loot.description)"></div>
+    <div *ngIf="hasDescription" class="loot-description mat-body-medium" [innerHtml]="md(loot.description)"></div>
     <div *ngIf="hasBasic">
-      <br *ngIf="hasDescription" />
-      <h4 class="loot-desc-header">Basic:</h4>
-      <div class="loot-basic" [innerHTML]="md(loot.basic)"></div>
+      <span class="loot-desc-header mat-title-medium">Basic:</span>
+      <div class="loot-basic mat-body-medium" [innerHTML]="md(loot.basic)"></div>
     </div>
     <div *ngIf="hasCharged">
-      <br *ngIf="hasBasic || hasDescription" />
-      <h4 class="loot-desc-header">Charged:</h4>
-      <div class="loot-charged" [innerHTML]="md(loot.charged)"></div>
+      <span class="loot-desc-header mat-title-medium">Charged:</span>
+      <div class="loot-charged mat-body-medium" [innerHTML]="md(loot.charged)"></div>
     </div>
   </mat-card-content>
   <mat-card-footer *ngIf="hasFooter" class="loot-footer">
