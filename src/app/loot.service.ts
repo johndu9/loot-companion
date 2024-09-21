@@ -1,0 +1,165 @@
+import { Injectable } from '@angular/core';
+import { DEFAULT_LOOTS, Loot, Player, Pool } from './loot.defs';
+import { BehaviorSubject } from 'rxjs';
+
+const LOOT_NAME = 'lootDefs';
+const POOL_NAME = 'poolDefs';
+const PLAYER_NAME = 'playerDefs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LootService {
+
+  private _loots = new BehaviorSubject(new Array<Loot>(0));
+  loots$ = this._loots.asObservable();
+  private _pools = new BehaviorSubject(new Array<Pool>(0));
+  pools$ = this._pools.asObservable();
+  private _players = new BehaviorSubject(new Array<Player>(0));
+  players$ = this._players.asObservable();
+
+  private get loots() { return this._loots.value; }
+  private get pools() { return this._pools.value; }
+  private get players() { return this._players.value; }
+
+  constructor() {
+    const lootDefs = localStorage.getItem(LOOT_NAME);
+    const poolDefs = localStorage.getItem(POOL_NAME);
+    const playerDefs = localStorage.getItem(PLAYER_NAME);
+    const hasDefs = lootDefs && poolDefs && playerDefs;
+    if (hasDefs) {
+      this._loots.next(JSON.parse(lootDefs) as Loot[]);
+      this._pools.next(JSON.parse(poolDefs) as Pool[]);
+      this._players.next(JSON.parse(playerDefs) as Player[]);
+      this.setupSaveSubscriptions()
+    } else {
+      this.setupSaveSubscriptions()
+      this.resetDefs();
+    }
+  }
+
+  private setupSaveSubscriptions() {
+    this.loots$.subscribe(loots => this.saveDefs(LOOT_NAME, loots));
+    this.pools$.subscribe(pools => this.saveDefs(POOL_NAME, pools));
+    this.players$.subscribe(players => this.saveDefs(PLAYER_NAME, players));
+  }
+
+  resetDefs() {
+    const ls = DEFAULT_LOOTS;
+    const sources = [...new Set(ls.map(l => l.sourcePool))];
+    const ps = sources.map(s => new Pool(s, ls.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+    this._loots.next(ls);
+    this._pools.next(ps);
+    this._players.next([]);
+    this.addPlayer('John Loot');
+  }
+
+  addLootDef(loot: Loot) {
+    const lootIndex = this.loots.length;
+    this._loots.next([...this.loots, loot]);
+
+    const poolIndex = this.pools.findIndex(p => p.name === loot.sourcePool);
+    if (poolIndex >= 0) {
+      const oldPool = this.pools[poolIndex];
+      const newPool = new Pool(oldPool.name, [...oldPool.loots, lootIndex])
+      this._pools.next(this.replace<Pool>(this.pools, poolIndex, newPool));
+    } else {
+      this._pools.next([...this.pools, new Pool(loot.sourcePool, [lootIndex])]);
+    }
+  }
+
+  removeLootDef(lootIndex: number) {
+    this._loots.next([...this.loots].filter((l, i) => i !== lootIndex));
+
+    const poolIndex = this.findLootInPools(lootIndex);
+    const adjustLootIndex = (l: number) => l > lootIndex ? l - 1 : l;
+    if (poolIndex >= 0) {
+      const newPools = this.pools.map((p, i) => {
+        if (i === poolIndex) {
+          return new Pool(p.name, p.loots.filter(l => l !== lootIndex).map(adjustLootIndex));
+        } else {
+          return new Pool(p.name, p.loots.map(adjustLootIndex));
+        }});
+      this._pools.next(newPools);
+    }
+  }
+
+  addPlayer(name: string) {
+    if (this.pools.map(p => p.name).indexOf(name) >= 0) {
+      console.error('Pool or player with name "' + name + '" already exists');
+    } else {
+      const poolIndex = this.pools.length;
+      this.addPool(name);
+      this._players.next([...this.players, new Player(name, poolIndex)]);
+    }
+  }
+
+  drainLoot(lootIndex: number) {
+    const poolIndex = this.findLootInPools(lootIndex);
+    if (poolIndex >= 0) {
+      const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
+      const oldPlayer = this.players[playerIndex];
+      const oldDrained = oldPlayer.drained;
+      if (!oldDrained.includes(lootIndex)) {
+        const newPlayer = {...oldPlayer, drained: [...oldDrained, lootIndex]} as Player;
+        this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
+      }
+    }
+  }
+
+  chargeLoot(lootIndex: number) {
+    const poolIndex = this.findLootInPools(lootIndex);
+    if (poolIndex >= 0) {
+      const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
+      const oldPlayer = this.players[playerIndex];
+      const oldDrained = oldPlayer.drained;
+      if (oldDrained.includes(lootIndex)) {
+        const newPlayer = {...oldPlayer, drained: oldDrained.filter(l => l !== lootIndex)} as Player;
+        this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
+      }
+    }
+  }
+
+  addToStat(playerIndex: number, statIndex: number, addValue: number) {
+    const player = this.players[playerIndex];
+    this.updateStats(playerIndex, Player.newStat(player.stats, statIndex, player.stats[statIndex] + addValue));
+  }
+
+  updateStats(playerIndex: number, newStats: number[]) {
+    const newPlayer = {...this.players[playerIndex], stats: newStats} as Player;
+    this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
+  }
+
+  addPool(name: string) {
+    if (this.pools.map(p => p.name).indexOf(name) >= 0) {
+      console.error('Pool with name "' + name + '" already exists');
+    } else {
+      this._pools.next([...this.pools, new Pool(name)]);
+    }
+  }
+
+  moveLootToPool(lootIndex: number, poolIndex: number) {
+    const fromPoolIndex = this.findLootInPools(lootIndex);
+
+    if (fromPoolIndex >= 0) {
+      const fromPool = this.pools[fromPoolIndex];
+      const newFromPool = new Pool(fromPool.name, fromPool.loots.filter(l => l !== lootIndex));
+      const toPool = this.pools[poolIndex];
+      const newToPool = new Pool(toPool.name, [...toPool.loots, lootIndex]);
+      this._pools.next(this.replace<Pool>(this.replace<Pool>(this.pools, fromPoolIndex, newFromPool), poolIndex, newToPool));
+    }
+  }
+
+  private replace<T>(arr: Array<T>, index: number, newValue: T) {
+    return [...arr].map((v, i) => i === index ? newValue : v);
+  }
+
+  private findLootInPools(lootIndex: number) {
+    return this.pools.findIndex(p => p.loots.includes(lootIndex));
+  }
+
+  private saveDefs(name: string, value: any) {
+    const json = JSON.stringify(value);
+    localStorage.setItem(name, json);
+  }
+}

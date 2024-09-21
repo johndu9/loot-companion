@@ -1,6 +1,6 @@
 <mat-drawer-container class="example-container" hasBackdrop="false">
   <mat-drawer #drawer mode="push" (openedChange)="onFilterOpened($event)">
-    @if (isFilterable) {
+    @if (canFilter) {
       <div class="filter-drawer">
         <div class="loot-filter">
           <button class="loot-filter-close" mat-icon-button (click)="drawer.close()">
@@ -51,7 +51,7 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="loot-drawer">
-      @if (isFilterable) {
+      @if (canFilter) {
         <button class="loot-filter-expand" mat-flat-button (click)="drawer.toggle()">
           <mat-icon class="material-symbols-outlined">tune</mat-icon>
           Filter
@@ -60,13 +60,12 @@
       <div class="loot-list" [class.thin-loot-list]="isFilterOpen">
         @for (l of loots; track $index) {
           <loot-card
-            [hidden]="isLootHidden(l)"
+            [hidden]="isLootHidden(l, $index)"
             [loot]="l"
-            [cardType]="cardType"
-            [isCharged]="player ? (player.hasLoot(l.name) ? player.isCharged(l.name) : true) : true"
-            (useCharge)="setCharge($event, false)"
-            (restoreCharge)="setCharge($event, true)"
-            (select)="select.emit($event)" />
+            [isCharged]="charged.length === loots.length ? charged[$index] : true"
+            [buttonText]="buttonText.length === loots.length ? buttonText[$index] : ''"
+            [buttonIcon]="buttonIcon.length === loots.length ? buttonIcon[$index] : ''"
+            (select)="select.emit({name: $event, index: $index})" />
         }
       </div>
     </div>

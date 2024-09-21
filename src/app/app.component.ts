@@ -1,38 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DEFAULT_LOOTS, Loot, Player } from './loot.defs.js';
-import { LootCardType } from "./loot-card.component";
 import { LootListComponent } from "./loot-list.component";
+import { PlayerComponent } from "./player.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LootListComponent],
+  imports: [RouterOutlet, LootListComponent, PlayerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   title = 'loot-companion';
-  loots: Loot[] = [];
-  t = LootCardType;
-  p?: Player;
-  
-  ngOnInit(): void {
-    this.initLootDefs();
-  }
 
-  initLootDefs() {
-    const defs = localStorage.getItem('lootDefs');
-    if (defs) {
-      this.loots = JSON.parse(defs) as Loot[];
-    } else {
-      this.resetLootDefs();
-    }
-  }
-
-  resetLootDefs() {
-    this.loots = DEFAULT_LOOTS;
-    localStorage.setItem('lootDefs', JSON.stringify(this.loots));
-  }
+  constructor() { }
 }

@@ -1,4 +1,4 @@
-<mat-card class="loot-card" [class.loot-drained]="cardType === t.CHARGE && hasCharged && !isCharged" appearance="outlined">
+<mat-card class="loot-card" [class.loot-drained]="hasCharged && !isCharged" appearance="outlined">
   <mat-card-header>
     <mat-card-title>
       <span class="loot-name">{{loot.name}}</span>
@@ -8,30 +8,20 @@
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div *ngIf="hasDescription" class="loot-description mat-body-medium" [innerHtml]="md(loot.description)"></div>
+    <div *ngIf="hasDescription" class="loot-description mat-body-medium" [innerHtml]="descriptionHtml"></div>
     <div *ngIf="hasBasic">
       <span class="loot-desc-header mat-title-medium">Basic:</span>
-      <div class="loot-basic mat-body-medium" [innerHTML]="md(loot.basic)"></div>
+      <div class="loot-basic mat-body-medium" [innerHTML]="basicHtml"></div>
     </div>
     <div *ngIf="hasCharged">
       <span class="loot-desc-header mat-title-medium">Charged:</span>
-      <div class="loot-charged mat-body-medium" [innerHTML]="md(loot.charged)"></div>
+      <div class="loot-charged mat-body-medium" [innerHTML]="chargedHtml"></div>
     </div>
   </mat-card-content>
-  <mat-card-footer *ngIf="hasFooter" class="loot-footer">
-    <ng-container *ngIf="cardType === t.CHARGE">
-      <button *ngIf="hasCharged && isCharged" mat-flat-button (click)="useCharge.emit(loot.name)">
-        <mat-icon class="material-symbols-outlined">bolt</mat-icon>
-        Use charge
-      </button>
-      <button *ngIf="hasCharged && !isCharged" mat-flat-button (click)="restoreCharge.emit(loot.name)">
-        <mat-icon class="material-symbols-outlined">replay</mat-icon>
-        Restore charge
-      </button>
-    </ng-container>
-    <button *ngIf="cardType === t.SELECT" mat-flat-button (click)="select.emit(loot.name)">
-      <mat-icon class="material-symbols-outlined">add_circle</mat-icon>
-      Select
+  <mat-card-footer *ngIf="buttonText.length > 0" class="loot-footer">
+    <button mat-flat-button (click)="select.emit(loot.name)">
+      <mat-icon class="material-symbols-outlined">{{buttonIcon}}</mat-icon>
+      {{buttonText}}
     </button>
   </mat-card-footer>
 </mat-card>

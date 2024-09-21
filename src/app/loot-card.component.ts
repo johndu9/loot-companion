@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Loot, LootType } from "./loot.defs";
 import { NgIf, NgClass } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
@@ -7,12 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
-export enum LootCardType {
-  CHARGE = 'charge',
-  SELECT = 'select',
-  DISPLAY_ONLY = 'display-only'
-}
-
 @Component({
   selector: 'loot-card',
   standalone: true,
@@ -20,27 +14,26 @@ export enum LootCardType {
   templateUrl: './loot-card.component.html',
   styleUrl: './loot-card.component.scss'
 })
-export class LootCardComponent {
+export class LootCardComponent implements OnInit {
 
   @Input({required: true})
   loot!: Loot;
 
-  @Input({required: true})
-  cardType!: LootCardType;
-
   @Input()
   isCharged: boolean = true;
 
-  @Output()
-  useCharge = new EventEmitter<string>();
+  @Input()
+  buttonIcon: string = '';
 
-  @Output()
-  restoreCharge = new EventEmitter<string>();
+  @Input()
+  buttonText: string = '';
 
   @Output()
   select = new EventEmitter<string>();
 
-  t = LootCardType;
+  descriptionHtml: string = '';
+  basicHtml: string = '';
+  chargedHtml: string = '';
 
   get cardTraits(): string {
     if (this.loot.type === LootType.CONSUMABLE) {
@@ -62,12 +55,15 @@ export class LootCardComponent {
     return this.loot.description.length > 0;
   }
 
-  get hasFooter(): boolean {
-    return this.cardType === LootCardType.SELECT || (this.cardType === LootCardType.CHARGE && this.hasCharged);
+  async ngOnInit() {
+    // the uponSanitizeElement hook is expensive when run from dom, use fields instead
+    this.descriptionHtml = await this.md(this.loot.description);
+    this.basicHtml = await this.md(this.loot.basic);
+    this.chargedHtml = await this.md(this.loot.charged);
   }
 
-  md(input: string) {
-    const output = marked.parse(input, { async: false });
+  async md(input: string) {
+    const output = await marked.parse(input);
     // replace <p> with <span> for CSS purposes
     DOMPurify.addHook("uponSanitizeElement",
       (n) => {

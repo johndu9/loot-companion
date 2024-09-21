@@ -30,50 +30,36 @@ export class Consumable extends Loot {
   }
 }
 
-enum PlayerStat {
-  HEALTH = 0,
-  ARMOR = 1,
-  FORCE = 2,
-  FLOW = 3,
-  FOCUS = 4
+export class Pool {
+  constructor(
+    public name: string,
+    public loots: number[] = []
+  ) {}
+}
+
+export enum PlayerStat {
+  Health = 0,
+  Armor = 1,
+  Force = 2,
+  Flow = 3,
+  Focus = 4
 }
 
 export class Player {
   constructor (
     public name: string,
-    private stats: number[] = [2, 2, 1, 1, 1, 1, 1, 1, 1, 1],
-    private loot: any = {}
+    public pool: number,
+    public stats: number[] = [2, 2, 1, 1, 1, 1, 1, 1, 1, 1],
+    public drained: number[] = []
   ) {}
 
-  private getMax(stat: PlayerStat) { return this.stats[stat * 2]; }
-  private setMax(stat: PlayerStat, value: number) { this.stats[stat * 2] = value; }
-  private getCurrent(stat: PlayerStat) { return this.stats[stat * 2 + 1]; }
-  private setCurrent(stat: PlayerStat, value: number) { this.stats[stat * 2 + 1] = value; }
-  get healthMax() { return this.getMax(PlayerStat.HEALTH); }
-  set healthMax(value: number) { this.setMax(PlayerStat.HEALTH, value); }
-  get healthCurrent() { return this.getCurrent(PlayerStat.HEALTH); }
-  set healthCurrent(value: number) { this.setCurrent(PlayerStat.HEALTH, value); }
-  get armorMax() { return this.getMax(PlayerStat.ARMOR); }
-  set armorMax(value: number) { this.setMax(PlayerStat.ARMOR, value); }
-  get armorCurrent() { return this.getCurrent(PlayerStat.ARMOR); }
-  set armorCurrent(value: number) { this.setCurrent(PlayerStat.ARMOR, value); }
-  get forceMax() { return this.getMax(PlayerStat.FORCE); }
-  set forceMax(value: number) { this.setMax(PlayerStat.FORCE, value); }
-  get forceCurrent() { return this.getCurrent(PlayerStat.FORCE); }
-  set forceCurrent(value: number) { this.setCurrent(PlayerStat.FORCE, value); }
-  get flowMax() { return this.getMax(PlayerStat.FLOW); }
-  set flowMax(value: number) { this.setMax(PlayerStat.FLOW, value); }
-  get flowCurrent() { return this.getCurrent(PlayerStat.FLOW); }
-  set flowCurrent(value: number) { this.setCurrent(PlayerStat.FLOW, value); }
-  get focusMax() { return this.getMax(PlayerStat.FOCUS); }
-  set focusMax(value: number) { this.setMax(PlayerStat.FOCUS, value); }
-  get focusCurrent() { return this.getCurrent(PlayerStat.FOCUS); }
-  set focusCurrent(value: number) { this.setCurrent(PlayerStat.FOCUS, value); }
-  addLoot(lootName: string) { this.loot[lootName] = true; }
-  hasLoot(lootName: string) { return Object.hasOwn(this.loot, lootName); }
-  setLootCharged(lootName: string, isCharged: boolean) { if (this.hasLoot(lootName)) this.loot[lootName] = isCharged; }
-  isCharged(lootName: string) { return this.loot[lootName]; }
-  removeLoot(lootName: string) { delete this.loot[lootName]; }
+  static indexOfMax(stat: PlayerStat) { return stat * 2; }
+  static indexOfCurrent(stat: PlayerStat) { return stat * 2 + 1; }
+  static newStat(stats: number[], index: number, newValue: number) {
+    return stats.map((s, i) => i === index ? newValue : s);
+  }
+  static getMax(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfMax(stat)]; }
+  static getCurrent(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfCurrent(stat)]; }
 }
 
 export const DEFAULT_LOOTS: Loot[] = [
