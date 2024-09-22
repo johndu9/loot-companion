@@ -4,8 +4,8 @@
     @for (s of statTypes; track $index) {
       <div class="player-stat">
         <div class="stat-title">
-          <span class="mat-title-medium">{{stat[s]}}</span>
           <mat-icon class="material-symbols-outlined">{{statToIcon(s)}}</mat-icon>
+          <span class="mat-title-medium">{{stat[s]}}</span>
         </div>
         <div class="stat-parts">
           <div class="stat-part"
