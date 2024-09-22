@@ -61,7 +61,7 @@ export class LootService {
     const poolIndex = this.pools.findIndex(p => p.name === loot.sourcePool);
     if (poolIndex >= 0) {
       const oldPool = this.pools[poolIndex];
-      const newPool = new Pool(oldPool.name, [...oldPool.loots, lootIndex])
+      const newPool = Pool.addLoot(oldPool, lootIndex);
       this._pools.next(this.replace<Pool>(this.pools, poolIndex, newPool));
     } else {
       this._pools.next([...this.pools, new Pool(loot.sourcePool, [lootIndex])]);
@@ -72,13 +72,12 @@ export class LootService {
     this._loots.next([...this.loots].filter((l, i) => i !== lootIndex));
 
     const poolIndex = this.findLootInPools(lootIndex);
-    const adjustLootIndex = (l: number) => l > lootIndex ? l - 1 : l;
     if (poolIndex >= 0) {
       const newPools = this.pools.map((p, i) => {
         if (i === poolIndex) {
-          return new Pool(p.name, p.loots.filter(l => l !== lootIndex).map(adjustLootIndex));
+          return Pool.adjustLootIndices(Pool.removeLoot(p, lootIndex), lootIndex);
         } else {
-          return new Pool(p.name, p.loots.map(adjustLootIndex));
+          return Pool.adjustLootIndices(p, lootIndex);
         }});
       this._pools.next(newPools);
     }
@@ -99,9 +98,8 @@ export class LootService {
     if (poolIndex >= 0) {
       const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
       const oldPlayer = this.players[playerIndex];
-      const oldDrained = oldPlayer.drained;
-      if (!oldDrained.includes(lootIndex)) {
-        const newPlayer = {...oldPlayer, drained: [...oldDrained, lootIndex]} as Player;
+      if (!oldPlayer.drained.includes(lootIndex)) {
+        const newPlayer = Player.addDrained(oldPlayer, lootIndex);
         this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
       }
     }
@@ -112,21 +110,15 @@ export class LootService {
     if (poolIndex >= 0) {
       const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
       const oldPlayer = this.players[playerIndex];
-      const oldDrained = oldPlayer.drained;
-      if (oldDrained.includes(lootIndex)) {
-        const newPlayer = {...oldPlayer, drained: oldDrained.filter(l => l !== lootIndex)} as Player;
+      if (oldPlayer.drained.includes(lootIndex)) {
+        const newPlayer = Player.removeDrained(oldPlayer, lootIndex);
         this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
       }
     }
   }
 
   addToStat(playerIndex: number, statIndex: number, addValue: number) {
-    const player = this.players[playerIndex];
-    this.updateStats(playerIndex, Player.newStat(player.stats, statIndex, player.stats[statIndex] + addValue));
-  }
-
-  updateStats(playerIndex: number, newStats: number[]) {
-    const newPlayer = {...this.players[playerIndex], stats: newStats} as Player;
+    const newPlayer = Player.addStat(this.players[playerIndex], statIndex, addValue);
     this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
   }
 
@@ -142,10 +134,8 @@ export class LootService {
     const fromPoolIndex = this.findLootInPools(lootIndex);
 
     if (fromPoolIndex >= 0) {
-      const fromPool = this.pools[fromPoolIndex];
-      const newFromPool = new Pool(fromPool.name, fromPool.loots.filter(l => l !== lootIndex));
-      const toPool = this.pools[poolIndex];
-      const newToPool = new Pool(toPool.name, [...toPool.loots, lootIndex]);
+      const newFromPool = Pool.removeLoot(this.pools[fromPoolIndex], lootIndex);
+      const newToPool = Pool.addLoot(this.pools[poolIndex], lootIndex);
       this._pools.next(this.replace<Pool>(this.replace<Pool>(this.pools, fromPoolIndex, newFromPool), poolIndex, newToPool));
     }
   }

@@ -35,6 +35,16 @@ export class Pool {
     public name: string,
     public loots: number[] = []
   ) {}
+
+  static removeLoot(pool: Pool, lootIndex: number) {
+    return new Pool(pool.name, pool.loots.filter(l => l !== lootIndex));
+  }
+  static addLoot(pool: Pool, lootIndex: number) {
+    return new Pool(pool.name, [...pool.loots, lootIndex]);
+  }
+  static adjustLootIndices(pool: Pool, lootIndex: number) {
+    return new Pool(pool.name, pool.loots.map(l => l > lootIndex ? l - 1 : l));
+  }
 }
 
 export enum PlayerStat {
@@ -55,8 +65,14 @@ export class Player {
 
   static indexOfMax(stat: PlayerStat) { return stat * 2; }
   static indexOfCurrent(stat: PlayerStat) { return stat * 2 + 1; }
-  static newStat(stats: number[], index: number, newValue: number) {
-    return stats.map((s, i) => i === index ? newValue : s);
+  static addStat(player: Player, index: number, addValue: number) {
+    return {...player, stats: player.stats.map((s, i) => i === index ? s + addValue : s)} as Player;
+  }
+  static removeDrained(player: Player, lootIndex: number) {
+    return {...player, drained: player.drained.filter(l => l !== lootIndex)} as Player;
+  }
+  static addDrained(player: Player, lootIndex: number) {
+    return {...player, drained: [...player.drained, lootIndex]} as Player;
   }
   static getMax(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfMax(stat)]; }
   static getCurrent(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfCurrent(stat)]; }
