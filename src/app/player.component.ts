@@ -26,7 +26,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
-  @Input({required: true})
+  @Input({required: true, alias: 'id'})
   playerIndex!: number;
 
   player?: Player;
@@ -77,9 +77,11 @@ export class PlayerComponent implements OnDestroy, OnInit {
       this.player = player;
       this.loots = loots;
       this.pools = pools;
-      this.inPlayerPool = loots.map((l, i) => pools[player.pool].loots.includes(i));
-      this.inSourcePool = loots.map((l, i) => pools.find(p => p.name === l.sourcePool)?.loots.includes(i) ?? false);
-      this.charged = loots.map((l, i) => !player.drained.includes(i));
+      if (player) {
+        this.inPlayerPool = loots.map((l, i) => pools[player.pool].loots.includes(i));
+        this.inSourcePool = loots.map((l, i) => pools.find(p => p.name === l.sourcePool)?.loots.includes(i) ?? false);
+        this.charged = loots.map((l, i) => !player.drained.includes(i));
+      }
     });
   }
 
@@ -162,7 +164,9 @@ export class PlayerComponent implements OnDestroy, OnInit {
   }
 
   incStat(stat: PlayerStat, isMax: boolean, addValue: number) {
-    this.lootService.addToStat(this.playerIndex, isMax ? Player.indexOfMax(stat) : Player.indexOfCurrent(stat), addValue);
+    if (this.player) {
+      this.lootService.addToStat(this.playerIndex, isMax ? Player.indexOfMax(stat) : Player.indexOfCurrent(stat), addValue);
+    }
   }
 
   statToIcon(stat: PlayerStat) {

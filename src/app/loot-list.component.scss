@@ -72,6 +72,7 @@ mat-drawer {
     min-width: calc(272px + 2px); // filter width + hr
     overflow-y: scroll;
     width: calc(100% - 16px);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 
     &.thin-loot-list {
       width: calc(100% - 306px);

@@ -1,54 +1,58 @@
-<div class="player">
-  <div class="player-info">
-    <span class="player-name mat-headline-medium">{{player?.name ?? ''}}</span>
-    @for (s of statTypes; track $index) {
-      <div class="player-stat">
-        <div class="stat-title">
-          <mat-icon class="material-symbols-outlined">{{statToIcon(s)}}</mat-icon>
-          <span class="mat-title-medium">{{stat[s]}}</span>
-        </div>
-        <div class="stat-parts">
-          <div class="stat-part"
-            [class.stat-value-good]="isGood[$index]"
-            [class.stat-value-warn]="isWarn[$index]"
-            [class.stat-value-bad]="isBad[$index]">
-            <span class="mat-label-medium">Current:</span>
-            <div class="stat-adjust">
-              <button mat-icon-button (click)="incStat(s, false, -1)"><mat-icon>remove</mat-icon></button>
-              <span class="stat-value">{{player ? p.getCurrent(player, s) : 0}}</span>
-              <button mat-icon-button (click)="incStat(s, false, 1)"><mat-icon>add</mat-icon></button>
+@if (player) {
+  <div class="player">
+    <div class="player-info">
+      <span class="player-name mat-headline-medium">{{player.name}}</span>
+      @for (s of statTypes; track $index) {
+        <div class="player-stat">
+          <div class="stat-title">
+            <mat-icon class="material-symbols-outlined">{{statToIcon(s)}}</mat-icon>
+            <span class="mat-title-medium">{{stat[s]}}</span>
+          </div>
+          <div class="stat-parts">
+            <div class="stat-part"
+              [class.stat-value-good]="isGood[$index]"
+              [class.stat-value-warn]="isWarn[$index]"
+              [class.stat-value-bad]="isBad[$index]">
+              <span class="mat-label-medium">Current:</span>
+              <div class="stat-adjust">
+                <button mat-icon-button (click)="incStat(s, false, -1)"><mat-icon>remove</mat-icon></button>
+                <span class="stat-value">{{p.getCurrent(player, s)}}</span>
+                <button mat-icon-button (click)="incStat(s, false, 1)"><mat-icon>add</mat-icon></button>
+              </div>
+            </div>
+            <div class="stat-part">
+              <span class="mat-label-medium">Max:</span>
+              <div class="stat-adjust">
+                <button mat-icon-button (click)="incStat(s, true, -1)"><mat-icon>remove</mat-icon></button>
+                <span class="stat-value">{{p.getMax(player, s)}}</span>
+                <button mat-icon-button (click)="incStat(s, true, 1)"><mat-icon>add</mat-icon></button>
+              </div>
             </div>
           </div>
-          <div class="stat-part">
-            <span class="mat-label-medium">Max:</span>
-            <div class="stat-adjust">
-              <button mat-icon-button (click)="incStat(s, true, -1)"><mat-icon>remove</mat-icon></button>
-              <span class="stat-value">{{player ? p.getMax(player, s) : 0}}</span>
-              <button mat-icon-button (click)="incStat(s, true, 1)"><mat-icon>add</mat-icon></button>
-            </div>
-          </div>
         </div>
-      </div>
-    }
-    <button class="loot-view-mode" mat-flat-button (click)="mode = m.ViewLoot">
-      <mat-icon class="material-symbols-outlined">bolt</mat-icon>
-      Player loot
-    </button>
-    <button class="loot-view-mode" mat-flat-button (click)="mode = m.AddLoot">
-      <mat-icon class="material-symbols-outlined">add</mat-icon>
-      Add loot
-    </button>
-    <button class="loot-view-mode" mat-flat-button (click)="mode = m.RemoveLoot">
-      <mat-icon class="material-symbols-outlined">remove</mat-icon>
-      Remove loot
-    </button>
+      }
+      <button class="loot-view-mode" mat-flat-button (click)="mode = m.ViewLoot">
+        <mat-icon class="material-symbols-outlined">bolt</mat-icon>
+        Player loot
+      </button>
+      <button class="loot-view-mode" mat-flat-button (click)="mode = m.AddLoot">
+        <mat-icon class="material-symbols-outlined">add</mat-icon>
+        Add loot
+      </button>
+      <button class="loot-view-mode" mat-flat-button (click)="mode = m.RemoveLoot">
+        <mat-icon class="material-symbols-outlined">remove</mat-icon>
+        Remove loot
+      </button>
+    </div>
+    <hr>
+    <loot-list
+      [buttonText]="modeToButtonText(mode)"
+      [buttonIcon]="modeToButtonIcon(mode)"
+      [canFilter]="mode === m.AddLoot"
+      [hidden]="modeToHidden(mode)"
+      [charged]="charged"
+      (select)="onSelect($event)" />
   </div>
-  <hr>
-  <loot-list
-    [buttonText]="modeToButtonText(mode)"
-    [buttonIcon]="modeToButtonIcon(mode)"
-    [canFilter]="mode === m.AddLoot"
-    [hidden]="modeToHidden(mode)"
-    [charged]="charged"
-    (select)="onSelect($event)" />
-</div>
+} @else {
+  <h2>Player not found!</h2>
+}

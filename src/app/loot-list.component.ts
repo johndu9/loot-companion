@@ -67,7 +67,7 @@ export class LootListComponent implements OnDestroy {
   }
 
   isLootHidden(loot: Loot, index: number) {
-    const hidden = this.hidden.length === this.loots.length && this.hidden[index];
+    const hidden = this.hidden ? this.hidden.length === this.loots.length && this.hidden[index] : false;
     if (this.canFilter) {
       const inSelectedFilters = this.selectedTypes.includes(loot.type) && this.selectedSources.includes(loot.sourcePool);
       const n = this.name.toLowerCase();

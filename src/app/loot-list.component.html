@@ -1,5 +1,5 @@
 <mat-drawer-container class="example-container" hasBackdrop="false">
-  <mat-drawer #drawer mode="push" (openedChange)="onFilterOpened($event)">
+  <mat-drawer #drawer mode="push" (openedStart)="onFilterOpened(true)" (closedStart)="onFilterOpened(false)">
     @if (canFilter) {
       <div class="filter-drawer">
         <div class="loot-filter">
@@ -62,9 +62,9 @@
           <loot-card
             [hidden]="isLootHidden(l, $index)"
             [loot]="l"
-            [isCharged]="charged.length === loots.length ? charged[$index] : true"
-            [buttonText]="buttonText.length === loots.length ? buttonText[$index] : ''"
-            [buttonIcon]="buttonIcon.length === loots.length ? buttonIcon[$index] : ''"
+            [isCharged]="charged && charged.length === loots.length ? charged[$index] : true"
+            [buttonText]="buttonText && buttonText.length === loots.length ? buttonText[$index] : ''"
+            [buttonIcon]="buttonIcon && buttonIcon.length === loots.length ? buttonIcon[$index] : ''"
             (select)="select.emit({name: $event, index: $index})" />
         }
       </div>
