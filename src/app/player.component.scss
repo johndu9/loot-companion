@@ -1,6 +1,15 @@
+$info-height: 772px;
+
 .player {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+
+  @media(min-width: 768px) {
+    flex-direction: row;
+    min-height: $info-height;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
 }
 
 .player-info {
@@ -10,6 +19,13 @@
   padding: 8px;
   align-items: center;
   min-width: 280px;
+}
+
+.player-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-content: center;
 }
 
 .player-name {
@@ -71,9 +87,20 @@
 }
 
 .loot-view-mode {
-  width: 75%;
+  width: 246px;
+}
+
+.loot-view-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 loot-list {
   flex-grow: 1;
+
+  @media(min-width: 768px) {
+    min-height: $info-height;
+    overflow-y: auto;
+  }
 }
