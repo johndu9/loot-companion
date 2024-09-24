@@ -1,4 +1,4 @@
-mat-drawer-container {
+.loot-list {
   width: 100%;
 
   @media(min-width: 768px) {
@@ -7,57 +7,58 @@ mat-drawer-container {
   }
 }
 
-mat-drawer {
-  width: fit-content !important;
-}
-
 .filter-drawer {
   display: flex;
   flex-direction: row;
-  height: 100%;
   .loot-filter {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
     padding: 8px;
-    width: 272px;
-    background-color: #faf9fd;
+    width: 100%;
 
-    .loot-filter-close {
-      align-self: end;
+    .string-filters {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      flex-grow: 0;
+      gap: 8px;
+    }
+
+    .category-filters {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      flex-grow: 1;
+      gap: 8px;
     }
 
     .loot-filter-category {
       display: flex;
       flex-direction: column;
       align-items: start;
+      padding: 8px;
+      border: solid 1px #e0e2ec;
+      border-radius: 16px;
     }
 
     .loot-filter-string {
       margin-bottom: -20px; // account for hint text that we don't use
-      width: 100%;
     }
   }
+}
 
-  hr {
-    flex-grow: 0;
-    margin: 8px 0;
-    color: #e0e2ec;
-  }
+hr {
+  margin: 8px;
+  color: #e0e2ec;
 }
 
 .loot-drawer {
   display: flex;
   flex-direction: column;
   align-items: start;
-  height: 100%;
   width: 100%;
-
-  .loot-filter-expand {
-    margin: 8px;
-    flex-shrink: 0;
-  }
 
   .loot-list {
     display: flex;
@@ -68,13 +69,7 @@ mat-drawer {
     gap: 8px;
     padding: 8px;
     flex-grow: 1;
-    min-width: calc(272px + 2px); // filter width + hr
     overflow-y: auto;
     width: calc(100% - 16px);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-    &.thin-loot-list {
-      width: calc(100% - 306px);
-    }
   }
 }

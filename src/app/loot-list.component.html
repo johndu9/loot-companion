@@ -1,11 +1,28 @@
-<mat-drawer-container class="example-container" hasBackdrop="false">
-  <mat-drawer #drawer mode="push" (openedStart)="onFilterOpened(true)" (closedStart)="onFilterOpened(false)" autoFocus="false">
-    @if (canFilter) {
-      <div class="filter-drawer">
-        <div class="loot-filter">
-          <button class="loot-filter-close" mat-icon-button (click)="drawer.close()">
-            <mat-icon class="material-symbols-outlined">close</mat-icon>
-          </button>
+<div class="loot-list">
+  @if (canFilter) {
+    <div class="filter-drawer">
+      <div class="loot-filter">
+        <div class="string-filters">
+          <mat-form-field class="loot-filter-string" appearance="outline">
+            <mat-label>Loot Name</mat-label>
+            <input matInput type="text" [(ngModel)]="name">
+            @if (name.length > 0) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="name=''">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          <mat-form-field class="loot-filter-string" appearance="outline">
+            <mat-label>Loot Description</mat-label>
+            <input matInput type="text" [(ngModel)]="description">
+            @if (description.length > 0) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="description=''">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+        </div>
+        <div class="category-filters">
           <div class="loot-filter-category">
             <span class="mat-title-small">Types:</span>
             <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
@@ -26,48 +43,22 @@
               }
             </mat-chip-listbox>
           </div>
-          <mat-form-field class="loot-filter-string" appearance="outline">
-            <mat-label>Name</mat-label>
-            <input matInput type="text" [(ngModel)]="name">
-            @if (name.length > 0) {
-              <button matSuffix mat-icon-button aria-label="Clear" (click)="name=''">
-                <mat-icon>close</mat-icon>
-              </button>
-            }
-          </mat-form-field>
-          <mat-form-field class="loot-filter-string" appearance="outline">
-            <mat-label>Description</mat-label>
-            <input matInput type="text" [(ngModel)]="description">
-            @if (description.length > 0) {
-              <button matSuffix mat-icon-button aria-label="Clear" (click)="description=''">
-                <mat-icon>close</mat-icon>
-              </button>
-            }
-          </mat-form-field>
         </div>
-        <hr/>
-      </div>
-    }
-  </mat-drawer>
-  <mat-drawer-content>
-    <div class="loot-drawer">
-      @if (canFilter) {
-        <button class="loot-filter-expand" mat-flat-button (click)="drawer.toggle()">
-          <mat-icon class="material-symbols-outlined">tune</mat-icon>
-          Filter
-        </button>
-      }
-      <div class="loot-list" [class.thin-loot-list]="isFilterOpen">
-        @for (l of loots; track $index) {
-          <loot-card
-            [hidden]="isLootHidden(l, $index)"
-            [loot]="l"
-            [isCharged]="charged && charged.length === loots.length ? charged[$index] : true"
-            [buttonText]="buttonText && buttonText.length === loots.length ? buttonText[$index] : ''"
-            [buttonIcon]="buttonIcon && buttonIcon.length === loots.length ? buttonIcon[$index] : ''"
-            (select)="select.emit({name: $event, index: $index})" />
-        }
       </div>
     </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+    <hr/>
+  }
+  <div class="loot-drawer">
+    <div class="loot-list" [class.thin-loot-list]="isFilterOpen">
+      @for (l of loots; track $index) {
+        <loot-card
+          [hidden]="isLootHidden(l, $index)"
+          [loot]="l"
+          [isCharged]="charged && charged.length === loots.length ? charged[$index] : true"
+          [buttonText]="buttonText && buttonText.length === loots.length ? buttonText[$index] : ''"
+          [buttonIcon]="buttonIcon && buttonIcon.length === loots.length ? buttonIcon[$index] : ''"
+          (select)="select.emit({name: $event, index: $index})" />
+      }
+    </div>
+  </div>
+</div>
