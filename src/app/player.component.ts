@@ -35,7 +35,6 @@ export class PlayerComponent implements OnDestroy, OnInit {
   p = Player;
 
   inPlayerPool: boolean[] = [];
-  inSourcePool: boolean[] = [];
   charged: boolean[] = [];
   canFilter: boolean = false;
 
@@ -79,7 +78,6 @@ export class PlayerComponent implements OnDestroy, OnInit {
       this.pools = pools;
       if (player) {
         this.inPlayerPool = loots.map((l, i) => pools[player.pool].loots.includes(i));
-        this.inSourcePool = loots.map((l, i) => pools.find(p => p.name === l.sourcePool)?.loots.includes(i) ?? false);
         this.charged = loots.map((l, i) => !player.drained.includes(i));
       }
     });
@@ -95,7 +93,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
       case PlayerViewMode.RemoveLoot:
         return this.inPlayerPool.map(i => !i);
       case PlayerViewMode.AddLoot:
-        return this.inSourcePool.map(i => !i);
+        return this.inPlayerPool;
     }
   }
 
