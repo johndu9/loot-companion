@@ -1,5 +1,5 @@
 <mat-drawer-container class="example-container" hasBackdrop="false">
-  <mat-drawer #drawer mode="push" (openedStart)="onFilterOpened(true)" (closedStart)="onFilterOpened(false)">
+  <mat-drawer #drawer mode="push" (openedStart)="onFilterOpened(true)" (closedStart)="onFilterOpened(false)" autoFocus="false">
     @if (canFilter) {
       <div class="filter-drawer">
         <div class="loot-filter">

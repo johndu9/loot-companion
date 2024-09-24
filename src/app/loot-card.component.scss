@@ -2,7 +2,10 @@ $card-w: 280px;
 
 .loot-card {
   width: $card-w;
-  min-height: $card-w;
+
+  @media(min-width: 768px) {
+    min-height: $card-w;
+  }
 
   &.loot-drained {
     background: repeating-linear-gradient(
@@ -28,6 +31,7 @@ $card-w: 280px;
     span.loot-name {
       padding: 4px 8px 4px 8px !important;
       max-width: calc($card-w - 36px - 50px);
+      margin-bottom: 0;
     }
 
     mat-icon {
