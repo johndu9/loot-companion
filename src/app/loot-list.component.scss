@@ -31,12 +31,7 @@ mat-drawer {
     .loot-filter-category {
       display: flex;
       flex-direction: column;
-      gap: 8px;
       align-items: start;
-
-      h4 {
-        margin-bottom: 0;
-      }
     }
 
     .loot-filter-string {

@@ -7,7 +7,7 @@
             <mat-icon class="material-symbols-outlined">close</mat-icon>
           </button>
           <div class="loot-filter-category">
-            <h4>Types:</h4>
+            <span class="mat-title-small">Types:</span>
             <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
               @for (t of filterTypes; track $index) {
                 <mat-chip-option selectable>
@@ -17,7 +17,7 @@
             </mat-chip-listbox>
           </div>
           <div class="loot-filter-category">
-            <h4>Sources:</h4>
+            <span class="mat-title-small">Sources:</span>
             <mat-chip-listbox [multiple]="true" [value]="selectedSources" (change)="selectedSources = $event.value">
               @for (s of filterSources; track $index) {
                 <mat-chip-option selectable>
@@ -26,7 +26,7 @@
               }
             </mat-chip-listbox>
           </div>
-          <mat-form-field class="loot-filter-string">
+          <mat-form-field class="loot-filter-string" appearance="outline">
             <mat-label>Name</mat-label>
             <input matInput type="text" [(ngModel)]="name">
             @if (name.length > 0) {
@@ -35,7 +35,7 @@
               </button>
             }
           </mat-form-field>
-          <mat-form-field class="loot-filter-string">
+          <mat-form-field class="loot-filter-string" appearance="outline">
             <mat-label>Description</mat-label>
             <input matInput type="text" [(ngModel)]="description">
             @if (description.length > 0) {
