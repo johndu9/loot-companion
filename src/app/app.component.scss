@@ -13,6 +13,16 @@
   }
 }
 
+.nav-drawer {
+  width: fit-content;
+  padding: 0 8px;
+  max-width: 100%;
+
+  @media(min-width: 768px) {
+    max-width: 25%;
+  }
+}
+
 .toolbar-title {
   margin: 0;
 }

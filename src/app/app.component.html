@@ -1,9 +1,16 @@
-<mat-toolbar class="app-toolbar">
-  <button mat-icon-button>
-    <mat-icon class="material-symbols-outlined">menu</mat-icon>
-  </button>
-  <span class="toolbar-title mat-headline-small">Loot Companion</span>
-</mat-toolbar>
-<div class="app-content">
-  <router-outlet />
-</div>
+<mat-drawer-container>
+  <mat-drawer class="nav-drawer" #drawer autoFocus="false">
+    <nav-list (selected)="drawer.close()"></nav-list>
+  </mat-drawer>
+  <mat-drawer-content>
+    <mat-toolbar class="app-toolbar">
+      <button mat-icon-button (click)="drawer.toggle()">
+        <mat-icon class="material-symbols-outlined">menu</mat-icon>
+      </button>
+      <span class="toolbar-title mat-headline-small">LOOT Squire</span>
+    </mat-toolbar>
+    <div class="app-content">
+      <router-outlet />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

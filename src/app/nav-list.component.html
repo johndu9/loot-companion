@@ -1,0 +1,79 @@
+<mat-nav-list>
+  <div mat-subheader class="mat-title-medium">Loot</div>
+  <mat-list-item [activated]="isActive(['browse'])" (click)="navigate(['browse'])">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">grid_view</mat-icon>
+      <span class="nav-item-name mat-body-medium">View Loot</span>
+    </div>
+  </mat-list-item>
+  <mat-list-item [activated]="isActive(['delete'])" (click)="navigate(['delete'])">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">disabled_by_default</mat-icon>
+      <span class="nav-item-name mat-body-medium">Delete Loot</span>
+    </div>
+  </mat-list-item>
+  <mat-list-item (click)="addLoot()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">add_box</mat-icon>
+      <span class="nav-item-name mat-body-medium">Add Loot</span>
+    </div>
+  </mat-list-item>
+  <hr>
+  <div mat-subheader class="mat-title-medium">Characters</div>
+  @for (player of players; track player.name + $index) {
+    <mat-list-item [activated]="isActive(['player', $index])" (click)="navigate(['player', $index])">
+      <div class="nav-item">
+        <mat-icon class="material-symbols-outlined">person</mat-icon>
+        <span class="nav-item-name mat-body-medium">{{player.name}}</span>
+      </div>
+    </mat-list-item>
+  }
+  <mat-list-item (click)="addPlayer()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">person_add</mat-icon>
+      <span class="nav-item-name mat-body-medium">Add Character</span>
+    </div>
+  </mat-list-item>
+  <hr>
+  <div mat-subheader class="mat-title-medium">Pools</div>
+  @for (pool of nonPlayerPools; track pool.name + $index) {
+    <mat-list-item [activated]="isActive(['pool', $index])" (click)="navigate(['pool', $index])">
+      <div class="nav-item">
+        <mat-icon class="material-symbols-outlined">filter_none</mat-icon>
+        <span class="nav-item-name mat-body-medium">{{pool.name}}</span>
+      </div>
+    </mat-list-item>
+  }
+  <mat-list-item (click)="addPool()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">library_add</mat-icon>
+      <span class="nav-item-name mat-body-medium">Add Pool</span>
+    </div>
+  </mat-list-item>
+  <hr>
+  <div mat-subheader class="mat-title-medium">LOOT Squire</div>
+  <mat-list-item (click)="export()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">upload</mat-icon>
+      <span class="nav-item-name mat-body-medium">Export</span>
+    </div>
+  </mat-list-item>
+  <mat-list-item (click)="import()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">download</mat-icon>
+      <span class="nav-item-name mat-body-medium">Import</span>
+    </div>
+  </mat-list-item>
+  <mat-list-item (click)="reset()">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">undo</mat-icon>
+      <span class="nav-item-name mat-body-medium">Reset</span>
+    </div>
+  </mat-list-item>
+  <mat-list-item [activated]="isActive(['about'])" (click)="navigate(['about'])">
+    <div class="nav-item">
+      <mat-icon class="material-symbols-outlined">info</mat-icon>
+      <span class="nav-item-name mat-body-medium">About</span>
+    </div>
+  </mat-list-item>
+</mat-nav-list>

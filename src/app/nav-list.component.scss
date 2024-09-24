@@ -1,0 +1,21 @@
+mat-nav-list {
+  width: 100%;
+}
+
+mat-icon {
+  min-width: fit-content;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  gap: 16px;
+}
+
+.nav-item-name {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  max-width: 100%;
+}
