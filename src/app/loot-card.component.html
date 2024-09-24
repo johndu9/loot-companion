@@ -1,7 +1,7 @@
 <mat-card class="loot-card" [class.loot-drained]="hasCharged && !isCharged" appearance="outlined">
   <mat-card-header>
     <mat-card-title>
-      <span class="loot-name mat-headline-small">{{loot.name}}</span>
+      <span class="loot-name">{{loot.name}}</span>
       <mat-icon class="material-symbols-outlined" [ngClass]="typeToClass(loot.type)">{{typeToIcon(loot.type)}}</mat-icon></mat-card-title>
     <mat-card-subtitle>
       <span class="loot-subtitle-text mat-title-small">{{cardTraits}}</span>
