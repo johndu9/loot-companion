@@ -44,12 +44,25 @@ export class LootService {
     this.players$.subscribe(players => this.saveDefs(PLAYER_NAME, players));
   }
 
+  private fromSourcePoolsToInitialPools(sourcePools: Pool[]): Pool[] {
+    const initiatePoolIndex = sourcePools.findIndex(p => p.name === 'Initiate');
+    const starterPoolIndex = sourcePools.findIndex(p => p.name === 'Starter');
+    const consumablePoolIndex = sourcePools.findIndex(p => p.name === 'Consumable');
+    const playerPool = new Pool('Loot Pool', [...sourcePools[initiatePoolIndex].loots, ...sourcePools[starterPoolIndex].loots]);
+    const consumablePool = new Pool('Consumable Pool', [...sourcePools[consumablePoolIndex].loots]);
+    const newSourcePools = this.replaceN(sourcePools,
+      [initiatePoolIndex, starterPoolIndex, consumablePoolIndex]
+      .map(i => { return { index: i, value: new Pool(sourcePools[i].name, []) }; }));
+    return [playerPool, consumablePool, ...newSourcePools];
+  }
+
   resetDefs() {
     const ls = DEFAULT_LOOTS;
     const sources = [...new Set(ls.map(l => l.sourcePool))];
-    const ps = sources.map(s => new Pool(s, ls.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+    const sourcePools = sources.map(s => new Pool(s, ls.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+    const initialPools = this.fromSourcePoolsToInitialPools(sourcePools);
     this._loots.next(ls);
-    this._pools.next(ps);
+    this._pools.next(initialPools);
     this._players.next([]);
     this.addPlayer('John Loot');
   }
@@ -71,7 +84,7 @@ export class LootService {
   removeLootDef(lootIndex: number) {
     this._loots.next([...this.loots].filter((l, i) => i !== lootIndex));
 
-    const poolIndex = this.findLootInPools(lootIndex);
+    const poolIndex = this.poolIndexOfLoot(lootIndex);
     if (poolIndex >= 0) {
       const newPools = this.pools.map((p, i) => {
         if (i === poolIndex) {
@@ -94,7 +107,7 @@ export class LootService {
   }
 
   drainLoot(lootIndex: number) {
-    const poolIndex = this.findLootInPools(lootIndex);
+    const poolIndex = this.poolIndexOfLoot(lootIndex);
     if (poolIndex >= 0) {
       const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
       const oldPlayer = this.players[playerIndex];
@@ -106,13 +119,15 @@ export class LootService {
   }
 
   chargeLoot(lootIndex: number) {
-    const poolIndex = this.findLootInPools(lootIndex);
+    const poolIndex = this.poolIndexOfLoot(lootIndex);
     if (poolIndex >= 0) {
       const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
-      const oldPlayer = this.players[playerIndex];
-      if (oldPlayer.drained.includes(lootIndex)) {
-        const newPlayer = Player.removeDrained(oldPlayer, lootIndex);
-        this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
+      if (playerIndex >= 0) {
+        const oldPlayer = this.players[playerIndex];
+        if (oldPlayer.drained.includes(lootIndex)) {
+          const newPlayer = Player.removeDrained(oldPlayer, lootIndex);
+          this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
+        }
       }
     }
   }
@@ -131,7 +146,7 @@ export class LootService {
   }
 
   moveLootToPool(lootIndex: number, poolIndex: number) {
-    const fromPoolIndex = this.findLootInPools(lootIndex);
+    const fromPoolIndex = this.poolIndexOfLoot(lootIndex);
 
     if (fromPoolIndex >= 0) {
       const newFromPool = Pool.removeLoot(this.pools[fromPoolIndex], lootIndex);
@@ -141,7 +156,7 @@ export class LootService {
   }
 
   poolOfLoot(lootIndex: number) {
-    const poolIndex = this.findLootInPools(lootIndex);
+    const poolIndex = this.poolIndexOfLoot(lootIndex);
     if (poolIndex >= 0) {
       return {...this.pools[poolIndex]} as Pool;
     } else {
@@ -149,12 +164,18 @@ export class LootService {
     }
   }
 
+  poolIndexOfLoot(lootIndex: number) {
+    return this.pools.findIndex(p => p.loots.includes(lootIndex));
+  }
+
   private replace<T>(arr: Array<T>, index: number, newValue: T) {
     return [...arr].map((v, i) => i === index ? newValue : v);
   }
 
-  private findLootInPools(lootIndex: number) {
-    return this.pools.findIndex(p => p.loots.includes(lootIndex));
+  private replaceN<T>(arr: Array<T>, newValues: {index: number, value: T}[]) {
+    const is = newValues.map(n => n.index);
+    const vs = newValues.map(n => n.value);
+    return [...arr].map((v, i) => is.includes(i) ? vs[is.indexOf(i)] : v);
   }
 
   private saveDefs(name: string, value: any) {

@@ -44,7 +44,6 @@ export class PoolComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     combineLatest([this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
-      const pool = pools[this.poolIndex];
       this.loots = loots;
       this.pools = pools;
     });
@@ -64,20 +63,27 @@ export class PoolComponent implements OnDestroy, OnInit {
     }
   }
 
-  modeToButtonText(mode: PoolViewMode): string {
+  modeToButtonText(mode: PoolViewMode): string[] | string {
     switch (mode) {
-      case PoolViewMode.RemoveLoot: return 'Remove';
+      case PoolViewMode.RemoveLoot: {
+        return this.loots.map((l, i) =>
+          this.lootService.poolIndexOfLoot(i) === this.poolIndex &&
+          l.sourcePool === this.pool.name ?
+          '' : 'Remove');
+      }
       case PoolViewMode.AddLoot: return 'Add';
       default: return '';
     }
   }
 
-  modeToButtonIcon(mode: PoolViewMode): string {
+  modeToButtonIcon(mode: PoolViewMode): string[] | string {
     const buttonText = this.modeToButtonText(mode);
-    switch (buttonText) {
-      case 'Remove': return 'remove';
-      case 'Add': return 'add';
-      default: return '';
+    if (buttonText.includes('Remove')) {
+      return (buttonText as string[]).map(t => t === 'Remove' ? 'remove' : '');
+    } else if (buttonText.includes('Add')) {
+      return 'add';
+    } else {
+      return '';
     }
   }
 

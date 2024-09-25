@@ -45,8 +45,8 @@ export class LootListComponent implements OnDestroy {
   filterTypes: LootType[] = [];
   filterSources: string[] = [];
 
-  selectedTypes: LootType[] = [];
-  selectedSources: string[] = [];
+  selectedTypes: LootType[] | false = false;
+  selectedSources: string[] | false = false;
   name: string = '';
   description: string = '';
 
@@ -57,8 +57,8 @@ export class LootListComponent implements OnDestroy {
       this.loots = loots;
       this.filterTypes = [...new Set(this.loots.map(l => l.type))];
       this.filterSources = [...new Set(this.loots.map(l => l.sourcePool))];
-      this.selectedTypes = [...this.filterTypes];
-      this.selectedSources = [...this.filterSources];
+      this.selectedTypes = [...this.filterTypes].filter(t => this.selectedTypes ? this.selectedTypes.includes(t) : true);
+      this.selectedSources = [...this.filterSources].filter(t => this.selectedSources ? this.selectedSources.includes(t) : true);
     });
   }
 
@@ -80,7 +80,8 @@ export class LootListComponent implements OnDestroy {
   isLootHidden(loot: Loot, index: number) {
     const hidden = this.hidden ? this.hidden.length === this.loots.length && this.hidden[index] : false;
     if (this.canFilter) {
-      const inSelectedFilters = this.selectedTypes.includes(loot.type) && this.selectedSources.includes(loot.sourcePool);
+      const inSelectedFilters = (this.selectedTypes ? this.selectedTypes.includes(loot.type) : true)
+        && (this.selectedSources ? this.selectedSources.includes(loot.sourcePool) : true);
       const n = this.name.toLowerCase();
       const d = this.description.toLowerCase();
       const hasName = loot.name.toLowerCase().includes(n);

@@ -25,7 +25,7 @@
         <div class="category-filters">
           <div class="loot-filter-category">
             <span class="mat-title-small">Types:</span>
-            <mat-chip-listbox [multiple]="true" [value]="selectedTypes" (change)="selectedTypes = $event.value">
+            <mat-chip-listbox [multiple]="true" [(ngModel)]="selectedTypes">
               @for (t of filterTypes; track $index) {
                 <mat-chip-option selectable>
                   {{t}}
@@ -35,7 +35,7 @@
           </div>
           <div class="loot-filter-category">
             <span class="mat-title-small">Sources:</span>
-            <mat-chip-listbox [multiple]="true" [value]="selectedSources" (change)="selectedSources = $event.value">
+            <mat-chip-listbox [multiple]="true" [(ngModel)]="selectedSources">
               @for (s of filterSources; track $index) {
                 <mat-chip-option selectable>
                   {{s}}
@@ -50,7 +50,7 @@
   }
   <div class="loot-drawer">
     <div class="loot-list" [class.thin-loot-list]="isFilterOpen">
-      @for (l of loots; track $index) {
+      @for (l of loots; track l.name + $index) {
         <loot-card
           [hidden]="isLootHidden(l, $index)"
           [loot]="l"
