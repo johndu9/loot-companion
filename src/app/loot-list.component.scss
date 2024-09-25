@@ -1,10 +1,7 @@
 .loot-list {
   width: 100%;
-
-  @media(min-width: 768px) {
-    height: 100%;
-    overflow-y: auto;
-  }
+  height: 100%;
+  overflow-y: auto;
 }
 
 .filter-drawer {
@@ -62,7 +59,7 @@ hr {
   align-items: start;
   width: 100%;
 
-  .loot-list {
+  .loots {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

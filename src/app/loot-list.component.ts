@@ -53,8 +53,6 @@ export class LootListComponent implements OnDestroy {
   name: string = '';
   description: string = '';
 
-  isFilterOpen = false;
-
   constructor(lootService: LootService) {
     combineLatest([lootService.loots$, lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
       this.loots = loots;
@@ -96,9 +94,5 @@ export class LootListComponent implements OnDestroy {
       return hidden || !(inSelectedFilters && hasName && hasDesc);
     }
     return hidden;
-  }
-
-  onFilterOpened(opened: boolean) {
-    this.isFilterOpen = opened;
   }
 }
