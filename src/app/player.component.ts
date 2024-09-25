@@ -97,7 +97,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
     }
   }
 
-  modeToButtonText(mode: PlayerViewMode) {
+  modeToButtonText(mode: PlayerViewMode): string[] | string {
     switch (mode) {
       case PlayerViewMode.ViewLoot:
         return this.loots.map((l, i) => {
@@ -113,22 +113,29 @@ export class PlayerComponent implements OnDestroy, OnInit {
           return '';
         })
       case PlayerViewMode.RemoveLoot:
-        return new Array(this.loots.length).fill('Remove');
+        return 'Remove';
       case PlayerViewMode.AddLoot:
-        return new Array(this.loots.length).fill('Add');
+        return 'Add';
     }
   }
 
-  modeToButtonIcon(mode: PlayerViewMode) {
-    return this.modeToButtonText(mode).map(t => {
-      switch (t) {
-        case 'Use charge': return 'bolt';
-        case 'Restore charge': return 'replay';
+  modeToButtonIcon(mode: PlayerViewMode): string[] | string {
+    const buttonText = this.modeToButtonText(mode);
+    if (typeof buttonText === 'string' || buttonText instanceof String) {
+      switch (buttonText) {
         case 'Remove': return 'remove';
         case 'Add': return 'add';
         default: return '';
       }
-    })
+    } else {
+      return buttonText.map(t => {
+        switch (t) {
+          case 'Use charge': return 'bolt';
+          case 'Restore charge': return 'replay';
+          default: return '';
+        }
+      });
+    }
   }
 
   onSelect(event: {name: string, index: number}) {

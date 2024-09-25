@@ -140,6 +140,15 @@ export class LootService {
     }
   }
 
+  poolOfLoot(lootIndex: number) {
+    const poolIndex = this.findLootInPools(lootIndex);
+    if (poolIndex >= 0) {
+      return {...this.pools[poolIndex]} as Pool;
+    } else {
+      return false;
+    }
+  }
+
   private replace<T>(arr: Array<T>, index: number, newValue: T) {
     return [...arr].map((v, i) => i === index ? newValue : v);
   }

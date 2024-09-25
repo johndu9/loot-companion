@@ -34,10 +34,10 @@ export class LootListComponent implements OnDestroy {
   canFilter: boolean = true;
 
   @Input()
-  buttonText: string[] = [];
+  buttonText: string[] | string = [];
 
   @Input()
-  buttonIcon: string[] = [];
+  buttonIcon: string[] | string = [];
 
   @Output()
   select = new EventEmitter<{name: string, index: number}>();
@@ -64,6 +64,17 @@ export class LootListComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
+  }
+
+  indexOfArrOrString(field: string[] | string, index: number): string {
+    if (field) {
+      if (typeof field === 'string' || field instanceof String) {
+        return field as string;
+      } else if (field.length === this.loots.length) {
+        return field[index];
+      }
+    }
+    return '';
   }
 
   isLootHidden(loot: Loot, index: number) {
