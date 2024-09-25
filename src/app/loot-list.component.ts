@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from "@angular/core";
-import { Loot, LootType } from "./loot.defs";
+import { Loot, LootType, Pool } from "./loot.defs";
 import { MatChipsModule } from "@angular/material/chips";
 import { LootCardComponent } from "./loot-card.component";
 import { FormsModule } from "@angular/forms";
@@ -9,7 +9,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatInputModule } from '@angular/material/input';
 import { LootService } from "./loot.service";
-import { Subject, takeUntil } from "rxjs";
+import { combineLatest, Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: 'loot-list',
@@ -23,6 +23,7 @@ export class LootListComponent implements OnDestroy {
   private readonly unsubscribe$ = new Subject<void>();
 
   loots: Loot[] = [];
+  pools: Pool[] = [];
 
   @Input()
   charged: boolean[] = [];
@@ -44,21 +45,26 @@ export class LootListComponent implements OnDestroy {
 
   filterTypes: LootType[] = [];
   filterSources: string[] = [];
+  filterPools: string[] = [];
 
   selectedTypes: LootType[] | false = false;
   selectedSources: string[] | false = false;
+  selectedPools: string[] | false = false;
   name: string = '';
   description: string = '';
 
   isFilterOpen = false;
 
   constructor(lootService: LootService) {
-    lootService.loots$.pipe(takeUntil(this.unsubscribe$)).subscribe((loots) => {
+    combineLatest([lootService.loots$, lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
       this.loots = loots;
-      this.filterTypes = [...new Set(this.loots.map(l => l.type))];
-      this.filterSources = [...new Set(this.loots.map(l => l.sourcePool))];
+      this.pools = pools;
+      this.filterTypes = [...new Set(loots.map(l => l.type))];
+      this.filterSources = [...new Set(loots.map(l => l.sourcePool))];
+      this.filterPools = pools.map(p => p.name);
       this.selectedTypes = [...this.filterTypes].filter(t => this.selectedTypes ? this.selectedTypes.includes(t) : true);
       this.selectedSources = [...this.filterSources].filter(t => this.selectedSources ? this.selectedSources.includes(t) : true);
+      this.selectedPools = [...this.filterPools].filter(t => this.selectedPools ? this.selectedPools.includes(t) : true);
     });
   }
 
@@ -81,7 +87,8 @@ export class LootListComponent implements OnDestroy {
     const hidden = this.hidden ? this.hidden.length === this.loots.length && this.hidden[index] : false;
     if (this.canFilter) {
       const inSelectedFilters = (this.selectedTypes ? this.selectedTypes.includes(loot.type) : true)
-        && (this.selectedSources ? this.selectedSources.includes(loot.sourcePool) : true);
+        && (this.selectedSources ? this.selectedSources.includes(loot.sourcePool) : true)
+        && (this.pools.filter(p => this.selectedPools ? this.selectedPools.includes(p.name) : false).flatMap(p => p.loots).includes(index));
       const n = this.name.toLowerCase();
       const d = this.description.toLowerCase();
       const hasName = loot.name.toLowerCase().includes(n);

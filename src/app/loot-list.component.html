@@ -34,6 +34,16 @@
             </mat-chip-listbox>
           </div>
           <div class="loot-filter-category">
+            <span class="mat-title-small">Pools:</span>
+            <mat-chip-listbox [multiple]="true" [(ngModel)]="selectedPools">
+              @for (p of filterPools; track $index) {
+                <mat-chip-option selectable>
+                  {{p}}
+                </mat-chip-option>
+              }
+            </mat-chip-listbox>
+          </div>
+          <div class="loot-filter-category">
             <span class="mat-title-small">Sources:</span>
             <mat-chip-listbox [multiple]="true" [(ngModel)]="selectedSources">
               @for (s of filterSources; track $index) {
