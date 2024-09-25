@@ -29,17 +29,23 @@ export class PlayerComponent implements OnDestroy, OnInit {
   @Input({required: true, alias: 'id', transform: (id: any) => { return +id; }})
   playerIndex!: number;
 
-  player?: Player;
+  get player(): Player {
+    return this.players[this.playerIndex];
+  }
   statTypes = [PlayerStat.Health, PlayerStat.Armor, PlayerStat.Force, PlayerStat.Flow, PlayerStat.Focus];
   stat = PlayerStat;
   p = Player;
 
-  inPlayerPool: boolean[] = [];
-  charged: boolean[] = [];
-  canFilter: boolean = false;
+  get inPlayerPool(): boolean[] {
+    return this.loots.map((l, i) => this.pools[this.player.pool].loots.includes(i));
+  }
+  get charged(): boolean[] {
+    return this.loots.map((l, i) => !this.player.drained.includes(i));
+  }
 
   loots: Loot[] = [];
   pools: Pool[] = [];
+  players: Player[] = [];
 
   mode: PlayerViewMode = PlayerViewMode.ViewLoot;
   m = PlayerViewMode;
@@ -72,14 +78,9 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     combineLatest([this.lootService.players$, this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([players, loots, pools]) => {
-      const player = players[this.playerIndex];
-      this.player = player;
+      this.players = players;
       this.loots = loots;
       this.pools = pools;
-      if (player) {
-        this.inPlayerPool = loots.map((l, i) => pools[player.pool].loots.includes(i));
-        this.charged = loots.map((l, i) => !player.drained.includes(i));
-      }
     });
   }
 

@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { Loot, Player, Pool } from "./loot.defs";
+import { Loot, Pool } from "./loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { LootListComponent } from "./loot-list.component";
@@ -26,12 +26,12 @@ export class PoolComponent implements OnDestroy, OnInit {
   @Input({required: true, alias: 'id', transform: (id: any) => { return +id; }})
   poolIndex!: number;
 
-  pool?: Pool;
-  p = Player;
-
-  inPool: boolean[] = [];
-  charged: boolean[] = [];
-  canFilter: boolean = false;
+  get pool(): Pool {
+    return this.pools[this.poolIndex];
+  }
+  get inPool(): boolean[] {
+    return this.loots.map((l, i) => this.pool.loots.includes(i));
+  }
 
   loots: Loot[] = [];
   pools: Pool[] = [];
@@ -45,12 +45,8 @@ export class PoolComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     combineLatest([this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
       const pool = pools[this.poolIndex];
-      this.pool = pool;
       this.loots = loots;
       this.pools = pools;
-      if (pool) {
-        this.inPool = loots.map((l, i) => pool.loots.includes(i));
-      }
     });
   }
 
