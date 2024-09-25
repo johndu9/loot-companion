@@ -1,0 +1,55 @@
+$info-height: 772px;
+
+.pool {
+  display: flex;
+  flex-direction: column;
+
+  @media(min-width: 768px) {
+    flex-direction: row;
+    min-height: $info-height;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+}
+
+.pool-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px;
+  align-items: center;
+  min-width: 280px;
+}
+
+.pool-name {
+  text-align: center;
+  max-width: 264px;
+  padding: 4px 8px 4px 8px !important;
+  margin-bottom: 0;
+  border-radius: 8px;
+  border: solid 1px #c4c6d0;
+}
+
+.loot-view-mode {
+  width: 246px;
+}
+
+.loot-view-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+hr {
+  margin: 8px;
+  color: #e0e2ec;
+}
+
+loot-list {
+  flex-grow: 1;
+
+  @media(min-width: 768px) {
+    min-height: $info-height;
+    overflow-y: auto;
+  }
+}
