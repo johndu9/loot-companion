@@ -26,7 +26,7 @@ export class PoolComponent implements OnDestroy, OnInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
-  @Input({required: true, alias: 'id', transform: (id: any) => { return +id; }})
+  @Input({required: true})
   poolIndex!: number;
 
   get pool(): Pool {

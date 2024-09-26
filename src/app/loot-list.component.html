@@ -68,7 +68,7 @@
           [buttonText]="indexOfArrOrString(buttonText, $index)"
           [buttonIcon]="indexOfArrOrString(buttonIcon, $index)"
           [isButtonWarn]="isButtonWarn"
-          (select)="select.emit({name: $event, index: $index})" />
+          (buttonPressed)="buttonPressed.emit({name: $event, index: $index})" />
       }
     </div>
   </div>

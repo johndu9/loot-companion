@@ -27,7 +27,7 @@
       [buttonIcon]="modeToButtonIcon(mode)"
       [canFilter]="mode === m.AddLoot"
       [hidden]="modeToHidden(mode)"
-      (select)="onSelect($event)" />
+      (buttonPressed)="onSelect($event)" />
   </div>
 } @else {
   <not-found />

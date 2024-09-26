@@ -260,7 +260,7 @@ export class LootService {
     return [...arr].map((v, i) => is.includes(i) ? vs[is.indexOf(i)] : v);
   }
 
-  private saveDefs(name: string, value: any) {
+  private saveDefs(name: string, value: Array<Loot | Pool | Player>) {
     const json = JSON.stringify(value);
     localStorage.setItem(name, json);
   }

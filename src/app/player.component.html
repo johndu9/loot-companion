@@ -59,7 +59,7 @@
       [canFilter]="mode === m.AddLoot"
       [hidden]="modeToHidden(mode)"
       [charged]="charged"
-      (select)="onSelect($event)" />
+      (buttonPressed)="onSelect($event)" />
   </div>
 } @else {
   <not-found />

@@ -32,7 +32,7 @@ export class LootCardComponent implements OnInit {
   isButtonWarn: boolean = false;
 
   @Output()
-  select = new EventEmitter<string>();
+  buttonPressed = new EventEmitter<string>();
 
   descriptionHtml: string = '';
   basicHtml: string = '';

@@ -47,11 +47,11 @@ export class NavListComponent implements OnDestroy, OnInit {
     this.unsubscribe$.next();
   }
 
-  isActive(commands: any[]) {
+  isActive(commands: Array<string | number>) {
     return this.router.isActive(commands.join('/'), {paths: 'exact', queryParams: 'exact', fragment: 'ignored', matrixParams: 'ignored'});
   }
 
-  navigate(commands: any[]) {
+  navigate(commands: Array<string | number>) {
     this.router.navigate(commands);
     this.selected.emit();
   }

@@ -13,7 +13,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogClose, MatDialog
   [buttonIcon]="'delete_forever'"
   [buttonText]="'Delete loot'"
   [isButtonWarn]="true"
-  (select)="deleteLoot($event)"
+  (buttonPressed)="deleteLoot($event)"
   />
 `,
   styleUrl: './app.component.scss'

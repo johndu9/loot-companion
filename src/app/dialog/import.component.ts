@@ -33,9 +33,10 @@ import { MatInputModule } from '@angular/material/input';
 export class ImportDialog {
   file: File | false = false;
 
-  onFileSelect(event: any) {
-    const files: FileList = event.target.files;
-    if (files.length === 1) {
+  onFileSelect(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length === 1) {
       this.file = files.item(0) ?? false;
     }
   }

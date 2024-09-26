@@ -19,7 +19,7 @@
     </div>
   </mat-card-content>
   <mat-card-footer *ngIf="buttonText.length > 0" class="loot-footer">
-    <button [class.mat-warn]="isButtonWarn" mat-flat-button (click)="select.emit(loot.name)">
+    <button [class.mat-warn]="isButtonWarn" mat-flat-button (click)="buttonPressed.emit(loot.name)">
       <mat-icon class="material-symbols-outlined">{{buttonIcon}}</mat-icon>
       {{buttonText}}
     </button>
