@@ -64,7 +64,6 @@ export class LootService {
     this._loots.next(ls);
     this._pools.next(initialPools);
     this._players.next([]);
-    this.addPlayer('John Loot');
   }
 
   addLootDef(loot: Loot) {
@@ -166,6 +165,29 @@ export class LootService {
 
   poolIndexOfLoot(lootIndex: number) {
     return this.pools.findIndex(p => p.loots.includes(lootIndex));
+  }
+
+  private getAppBlob() {
+    const lootDefs = JSON.parse(localStorage.getItem(LOOT_NAME) ?? '');
+    const poolDefs = JSON.parse(localStorage.getItem(POOL_NAME) ?? '');
+    const playerDefs = JSON.parse(localStorage.getItem(PLAYER_NAME) ?? '');
+    const appDef = {lootDefs, poolDefs, playerDefs};
+    const str = JSON.stringify(appDef);
+    const bytes = new TextEncoder().encode(str);
+    return new Blob([bytes], { type: "application/json;charset=UTF-8" });
+  }
+
+  export() {
+    const blob = this.getAppBlob();
+    const a: HTMLAnchorElement = document.createElement('a');
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    const url: string = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = 'LOOT-Squire.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.parentElement?.removeChild(a);
   }
 
   private replace<T>(arr: Array<T>, index: number, newValue: T) {
