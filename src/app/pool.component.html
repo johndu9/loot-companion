@@ -4,16 +4,20 @@
       <span class="pool-name mat-headline-small">{{pool.name}}</span>
       <div class="loot-view-modes">
         <button class="loot-view-mode" mat-flat-button (click)="mode = m.ViewLoot">
-          <mat-icon class="material-symbols-outlined">bolt</mat-icon>
-          Pool loot
+          <mat-icon class="material-symbols-outlined">grid_view</mat-icon>
+          Pool Loot
         </button>
         <button class="loot-view-mode" mat-flat-button (click)="mode = m.AddLoot">
           <mat-icon class="material-symbols-outlined">add</mat-icon>
-          Add loot
+          Add Loot
         </button>
         <button class="loot-view-mode" mat-flat-button (click)="mode = m.RemoveLoot">
           <mat-icon class="material-symbols-outlined">remove</mat-icon>
-          Remove loot
+          Remove Loot
+        </button>
+        <button class="loot-view-mode mat-warn" mat-flat-button [disabled]="!canDeletePool" (click)="deletePool()">
+          <mat-icon class="material-symbols-outlined">tab_close</mat-icon>
+          Delete Pool
         </button>
       </div>
     </div>

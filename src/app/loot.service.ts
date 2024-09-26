@@ -113,18 +113,7 @@ export class LootService {
 
   removePlayer(playerIndex: number) {
     const playerPoolIndex = this.players[playerIndex].pool;
-    const playerPool = this.pools[playerPoolIndex];
-    const sourceNames = [...new Set(playerPool.loots.map(l => this.loots[l].sourcePool))];
-    const poolIndices = sourceNames.map(s => this.pools.findIndex(p => p.name === s));
-    const replaceValues = poolIndices.map(poolIndex => {
-      const pool = this.pools[poolIndex];
-      const playerLootInPool = playerPool.loots.filter(l => this.loots[l].sourcePool === pool.name);
-      return {
-        index: poolIndex,
-        value: new Pool(pool.name, [...pool.loots, ...playerLootInPool])
-      };
-    });
-    this._pools.next(this.replaceN(this.pools, replaceValues).filter((p, i) => i !== playerPoolIndex));
+    this._pools.next(this.returnLootToSources(playerPoolIndex).filter((p, i) => i !== playerPoolIndex));
     this._players.next(this.players.filter((p, i) => i !== playerIndex));
   }
 
@@ -164,6 +153,20 @@ export class LootService {
       console.error('Pool with name "' + name + '" already exists');
     } else {
       this._pools.next([...this.pools, new Pool(name)]);
+    }
+  }
+
+  removePool(poolIndex: number) {
+    const pool = this.pools[poolIndex];
+    const hasSourceLoot = this.loots.findIndex(l => l.sourcePool === pool.name) >= 0;
+    const isPlayerPool = this.players.map(p => p.pool).includes(poolIndex);
+    if (hasSourceLoot) {
+      console.error('Pool has loot with "' + pool.name + '" as source, delete its loot first');
+    } else if (isPlayerPool) {
+      console.error('Pool belongs to player, delete player instead');
+    } else {
+      this._pools.next(this.returnLootToSources(poolIndex).filter((p, i) => i !== poolIndex));
+      this._players.next(this.players.map(p => p.pool > poolIndex ? {...p, pool: p.pool - 1} as Player : p));
     }
   }
 
@@ -228,6 +231,23 @@ export class LootService {
     fileReader.onerror = (error) => {
       console.error(error);
     }
+  }
+
+  private returnLootToSources(fromPoolIndex: number) {
+    const fromPool = this.pools[fromPoolIndex];
+    const lootIndices = fromPool.loots;
+    const sourceNames = [...new Set(lootIndices.map(l => this.loots[l].sourcePool))];
+    const sourceIndices = sourceNames.map(s => this.pools.findIndex(p => p.name === s));
+    const replaceValues = sourceIndices.map(sourceIndex => {
+      const sourcePool = this.pools[sourceIndex];
+      const lootToSource = lootIndices.filter(l => this.loots[l].sourcePool === sourcePool.name);
+      return {
+        index: sourceIndex,
+        value: new Pool(sourcePool.name, [...sourcePool.loots, ...lootToSource])
+      };
+    });
+    replaceValues.push({index: fromPoolIndex, value: new Pool(fromPool.name, [])});
+    return this.replaceN(this.pools, replaceValues);
   }
 
   private replace<T>(arr: Array<T>, index: number, newValue: T) {

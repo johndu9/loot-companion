@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { Loot, Pool } from "./loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -6,6 +6,8 @@ import { LootListComponent } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
 import { NotFoundComponent } from "./not-found.component";
+import { MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
 
 enum PoolViewMode {
   ViewLoot,
@@ -33,6 +35,9 @@ export class PoolComponent implements OnDestroy, OnInit {
   get inPool(): boolean[] {
     return this.loots.map((l, i) => this.pool.loots.includes(i));
   }
+  get canDeletePool() {
+    return this.loots.findIndex(l => l.sourcePool === this.pool.name) < 0
+  }
 
   loots: Loot[] = [];
   pools: Pool[] = [];
@@ -40,7 +45,7 @@ export class PoolComponent implements OnDestroy, OnInit {
   mode: PoolViewMode = PoolViewMode.ViewLoot;
   m = PoolViewMode;
 
-  constructor(public lootService: LootService) {
+  constructor(private lootService: LootService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -103,4 +108,47 @@ export class PoolComponent implements OnDestroy, OnInit {
       }
     }
   }
+
+  readonly dialog = inject(MatDialog);
+
+  deletePool() {
+    const dialogRef = this.dialog.open(DeletePoolDialog,
+      {data: {poolName: this.pool.name}});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.router.navigate(['']);
+        this.lootService.removePool(this.poolIndex);
+      }
+    });
+  }
+}
+
+interface DeletePoolData {
+  poolName: string;
+}
+
+@Component({
+  selector: 'delete-pool-dialog',
+  template: `
+<span mat-dialog-title>Deleting {{data.poolName}}</span>
+<mat-dialog-content>
+  <span class="mat-body-medium">Are you sure?</span>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-button [mat-dialog-close]="true" class="mat-warn" cdkFocusInitial>Delete</button>
+</mat-dialog-actions>
+`,
+  standalone: true,
+  imports: [
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose
+  ],
+})
+class DeletePoolDialog {
+  readonly data = inject<DeletePoolData>(MAT_DIALOG_DATA);
 }
