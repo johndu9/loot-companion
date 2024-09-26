@@ -29,7 +29,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
-  @Input({required: true})
+  @Input({required: true, transform: (id: string | number) => { return +id; }})
   playerIndex!: number;
 
   get player(): Player {
