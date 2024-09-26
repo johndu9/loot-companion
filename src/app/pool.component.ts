@@ -5,6 +5,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { LootListComponent } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
+import { NotFoundComponent } from "./not-found.component";
 
 enum PoolViewMode {
   ViewLoot,
@@ -15,7 +16,7 @@ enum PoolViewMode {
 @Component({
   selector: 'pool',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, LootListComponent],
+  imports: [MatButtonModule, MatIconModule, LootListComponent, NotFoundComponent],
   templateUrl: './pool.component.html',
   styleUrl: './pool.component.scss'
 })

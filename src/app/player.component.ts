@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { LootListComponent } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
+import { NotFoundComponent } from "./not-found.component";
 
 enum PlayerViewMode {
   ViewLoot,
@@ -18,7 +19,7 @@ enum PlayerViewMode {
 @Component({
   selector: 'player',
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, LootListComponent],
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, LootListComponent, NotFoundComponent],
   templateUrl: './player.component.html',
   styleUrl: './player.component.scss'
 })

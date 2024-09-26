@@ -4,6 +4,7 @@ import { LootListComponent } from './loot-list.component';
 import { DeleteLootComponent } from './delete-loot.component';
 import { PoolComponent } from './pool.component';
 import { AboutComponent } from './about.component';
+import { NotFoundComponent } from './not-found.component';
 
 export const routes: Routes = [
   { path: 'player/:id', component: PlayerComponent },
@@ -18,5 +19,6 @@ export const routes: Routes = [
     } },
   { path: 'delete', component: DeleteLootComponent },
   { path: 'about', component: AboutComponent },
-  { path: '', redirectTo: 'browse', pathMatch: 'full' }
+  { path: '', redirectTo: 'browse', pathMatch: 'full' },
+  { path: '**', component: NotFoundComponent }
 ];
