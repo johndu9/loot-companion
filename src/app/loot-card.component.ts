@@ -59,6 +59,10 @@ export class LootCardComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.refreshBody();
+  }
+
+  async refreshBody() {
     // the uponSanitizeElement hook is expensive when run from dom, use fields instead
     this.descriptionHtml = await this.md(this.loot.description);
     this.basicHtml = await this.md(this.loot.basic);

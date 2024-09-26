@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
@@ -51,6 +51,7 @@ export interface AddLootData {
       </mat-select>
     </mat-form-field>
   </form>
+  <loot-card [hidden]="!lootForm.valid" [loot]="loot" />
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button [mat-dialog-close]="false">Cancel</button>
@@ -68,11 +69,14 @@ export interface AddLootData {
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    LootCardComponent
 ],
   styleUrl: './common-dialog.scss'
 })
-export class AddLootDialog {
+export class AddLootDialog implements OnInit {
+
+  @ViewChild(LootCardComponent) card!: LootCardComponent;
 
   readonly types = Object.values(LootType);
   readonly data = inject<AddLootData>(MAT_DIALOG_DATA);
@@ -119,5 +123,14 @@ export class AddLootDialog {
         description: value.description
       });
     return valueAsLoot;
+  }
+
+  ngOnInit(): void {
+    this.lootForm.valueChanges.subscribe(async () => {
+      if (this.lootForm.valid) {
+        this.card.loot = this.loot;
+        await this.card.refreshBody();
+      }
+    });
   }
 }
