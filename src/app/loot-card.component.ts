@@ -28,6 +28,9 @@ export class LootCardComponent implements OnInit {
   @Input()
   buttonText: string = '';
 
+  @Input()
+  isButtonWarn: boolean = false;
+
   @Output()
   select = new EventEmitter<string>();
 

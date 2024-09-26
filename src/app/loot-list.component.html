@@ -67,6 +67,7 @@
           [isCharged]="charged && charged.length === loots.length ? charged[$index] : true"
           [buttonText]="indexOfArrOrString(buttonText, $index)"
           [buttonIcon]="indexOfArrOrString(buttonIcon, $index)"
+          [isButtonWarn]="isButtonWarn"
           (select)="select.emit({name: $event, index: $index})" />
       }
     </div>

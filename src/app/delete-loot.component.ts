@@ -12,6 +12,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogClose, MatDialog
 <loot-list
   [buttonIcon]="'delete_forever'"
   [buttonText]="'Delete loot'"
+  [isButtonWarn]="true"
   (select)="deleteLoot($event)"
   />
 `,

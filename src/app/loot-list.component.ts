@@ -40,6 +40,9 @@ export class LootListComponent implements OnDestroy {
   @Input()
   buttonIcon: string[] | string = [];
 
+  @Input()
+  isButtonWarn: boolean = false;
+
   @Output()
   select = new EventEmitter<{name: string, index: number}>();
 
