@@ -3,6 +3,7 @@ import { PlayerComponent } from './player.component';
 import { LootListComponent } from './loot-list.component';
 import { DeleteLootComponent } from './delete-loot.component';
 import { PoolComponent } from './pool.component';
+import { AboutComponent } from './about.component';
 
 export const routes: Routes = [
   { path: 'player/:id', component: PlayerComponent },
@@ -16,5 +17,6 @@ export const routes: Routes = [
       buttonIcon: ''
     } },
   { path: 'delete', component: DeleteLootComponent },
+  { path: 'about', component: AboutComponent },
   { path: '', redirectTo: 'browse', pathMatch: 'full' }
 ];
