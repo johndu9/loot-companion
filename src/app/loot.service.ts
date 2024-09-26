@@ -111,6 +111,23 @@ export class LootService {
     }
   }
 
+  removePlayer(playerIndex: number) {
+    const playerPoolIndex = this.players[playerIndex].pool;
+    const playerPool = this.pools[playerPoolIndex];
+    const sourceNames = [...new Set(playerPool.loots.map(l => this.loots[l].sourcePool))];
+    const poolIndices = sourceNames.map(s => this.pools.findIndex(p => p.name === s));
+    const replaceValues = poolIndices.map(poolIndex => {
+      const pool = this.pools[poolIndex];
+      const playerLootInPool = playerPool.loots.filter(l => this.loots[l].sourcePool === pool.name);
+      return {
+        index: poolIndex,
+        value: new Pool(pool.name, [...pool.loots, ...playerLootInPool])
+      };
+    });
+    this._pools.next(this.replaceN(this.pools, replaceValues).filter((p, i) => i !== playerPoolIndex));
+    this._players.next(this.players.filter((p, i) => i !== playerIndex));
+  }
+
   drainLoot(lootIndex: number) {
     const poolIndex = this.poolIndexOfLoot(lootIndex);
     if (poolIndex >= 0) {

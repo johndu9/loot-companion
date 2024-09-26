@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { Loot, Player, PlayerStat, Pool } from "./loot.defs";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -9,6 +9,8 @@ import { LootListComponent } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
 import { NotFoundComponent } from "./not-found.component";
+import { MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
 
 enum PlayerViewMode {
   ViewLoot,
@@ -74,7 +76,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
       : false);
   }
 
-  constructor(public lootService: LootService) {
+  constructor(private lootService: LootService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -106,9 +108,9 @@ export class PlayerComponent implements OnDestroy, OnInit {
           if (l.charged) {
             if (this.inPlayerPool[i]) {
               if (this.charged[i]) {
-                return 'Use charge';
+                return 'Use Charge';
               } else {
-                return 'Restore charge';
+                return 'Restore Charge';
               }
             }
           }
@@ -132,8 +134,8 @@ export class PlayerComponent implements OnDestroy, OnInit {
     } else {
       return buttonText.map(t => {
         switch (t) {
-          case 'Use charge': return 'bolt';
-          case 'Restore charge': return 'replay';
+          case 'Use Charge': return 'bolt';
+          case 'Restore Charge': return 'replay';
           default: return '';
         }
       });
@@ -190,4 +192,47 @@ export class PlayerComponent implements OnDestroy, OnInit {
         return 'cognition';
     }
   }
+
+  readonly dialog = inject(MatDialog);
+
+  deletePlayer() {
+    const dialogRef = this.dialog.open(DeletePlayerDialog,
+      {data: {playerName: this.player.name}});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.router.navigate(['']);
+        this.lootService.removePlayer(this.playerIndex);
+      }
+    });
+  }
+}
+
+interface DeletePlayerData {
+  playerName: string;
+}
+
+@Component({
+  selector: 'delete-player-dialog',
+  template: `
+<span mat-dialog-title>Deleting {{data.playerName}}</span>
+<mat-dialog-content>
+  <span class="mat-body-medium">Are you sure?</span>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-button [mat-dialog-close]="true" class="mat-warn" cdkFocusInitial>Delete</button>
+</mat-dialog-actions>
+`,
+  standalone: true,
+  imports: [
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose
+  ],
+})
+class DeletePlayerDialog {
+  readonly data = inject<DeletePlayerData>(MAT_DIALOG_DATA);
 }
