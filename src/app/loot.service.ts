@@ -6,6 +6,12 @@ const LOOT_NAME = 'lootDefs';
 const POOL_NAME = 'poolDefs';
 const PLAYER_NAME = 'playerDefs';
 
+interface AppDef {
+  lootDefs: Loot[];
+  poolDefs: Pool[];
+  playerDefs: Player[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -171,7 +177,7 @@ export class LootService {
     const lootDefs = JSON.parse(localStorage.getItem(LOOT_NAME) ?? '');
     const poolDefs = JSON.parse(localStorage.getItem(POOL_NAME) ?? '');
     const playerDefs = JSON.parse(localStorage.getItem(PLAYER_NAME) ?? '');
-    const appDef = {lootDefs, poolDefs, playerDefs};
+    const appDef: AppDef = { lootDefs, poolDefs, playerDefs };
     const str = JSON.stringify(appDef);
     const bytes = new TextEncoder().encode(str);
     return new Blob([bytes], { type: "application/json;charset=UTF-8" });
@@ -188,6 +194,23 @@ export class LootService {
     a.click();
     window.URL.revokeObjectURL(url);
     a.parentElement?.removeChild(a);
+  }
+
+  import(file: File) {
+    const fileReader = new FileReader();
+    fileReader.readAsText(file, "UTF-8");
+    fileReader.onload = () => {
+      const result = (fileReader.result ?? '') as string;
+      const appDef = JSON.parse(result) as AppDef;
+      if (appDef && appDef.lootDefs && appDef.poolDefs && appDef.playerDefs) {
+        this._loots.next(appDef.lootDefs);
+        this._pools.next(appDef.poolDefs);
+        this._players.next(appDef.playerDefs);
+      }
+    }
+    fileReader.onerror = (error) => {
+      console.error(error);
+    }
   }
 
   private replace<T>(arr: Array<T>, index: number, newValue: T) {
