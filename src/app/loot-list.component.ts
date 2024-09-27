@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
 import { Loot, LootType, Pool } from "./loot.defs";
 import { MatChipsModule } from "@angular/material/chips";
 import { LootCardComponent } from "./loot-card.component";
@@ -11,6 +11,8 @@ import { MatInputModule } from '@angular/material/input';
 import { LootService } from "./loot.service";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 
+export const SCROLL_TOP_THRESHOLD = 500;
+
 @Component({
   selector: 'loot-list',
   standalone: true,
@@ -18,7 +20,7 @@ import { combineLatest, Subject, takeUntil } from "rxjs";
   templateUrl: './loot-list.component.html',
   styleUrl: './loot-list.component.scss'
 })
-export class LootListComponent implements OnDestroy {
+export class LootListComponent implements OnDestroy, AfterViewInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
@@ -45,6 +47,11 @@ export class LootListComponent implements OnDestroy {
 
   @Output()
   buttonPressed = new EventEmitter<{name: string, index: number}>();
+
+  @ViewChild('lootListDiv')
+  el!: ElementRef;
+
+  canScrollTop: boolean = false;
 
   filterTypes: LootType[] = [];
   filterSources: string[] = [];
@@ -73,6 +80,12 @@ export class LootListComponent implements OnDestroy {
     this.unsubscribe$.next();
   }
 
+  ngAfterViewInit(): void {
+    this.el.nativeElement.addEventListener('scroll', () => {
+      this.canScrollTop = this.el.nativeElement.scrollTop > SCROLL_TOP_THRESHOLD;
+    });
+  }
+
   indexOfArrOrString(field: string[] | string, index: number): string {
     if (field) {
       if (typeof field === 'string' || field instanceof String) {
@@ -97,5 +110,9 @@ export class LootListComponent implements OnDestroy {
       return hidden || !(inSelectedFilters && hasName && hasDesc);
     }
     return hidden;
+  }
+
+  scrollTop() {
+    this.el.nativeElement.scroll({top: 0, behavior: "smooth"});
   }
 }

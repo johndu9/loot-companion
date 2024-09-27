@@ -1,8 +1,8 @@
-import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Loot, Pool } from "./loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { LootListComponent } from "./loot-list.component";
+import { LootListComponent, SCROLL_TOP_THRESHOLD } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
 import { NotFoundComponent } from "./not-found.component";
@@ -45,6 +45,11 @@ export class PoolComponent implements OnDestroy, OnInit {
   mode: PoolViewMode = PoolViewMode.ViewLoot;
   m = PoolViewMode;
 
+  canScrollTop: boolean = false;
+
+  @ViewChild('poolDiv')
+  el!: ElementRef;
+
   constructor(private lootService: LootService, private router: Router) {
   }
 
@@ -52,6 +57,12 @@ export class PoolComponent implements OnDestroy, OnInit {
     combineLatest([this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
       this.loots = loots;
       this.pools = pools;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.el.nativeElement.addEventListener('scroll', () => {
+      this.canScrollTop = this.el.nativeElement.scrollTop > SCROLL_TOP_THRESHOLD;
     });
   }
 
@@ -107,6 +118,10 @@ export class PoolComponent implements OnDestroy, OnInit {
         }
       }
     }
+  }
+
+  scrollTop() {
+    this.el.nativeElement.scroll({top: 0, behavior: "smooth"});
   }
 
   readonly dialog = inject(MatDialog);

@@ -1,11 +1,11 @@
-import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Loot, Player, PlayerStat, Pool } from "./loot.defs";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from '@angular/material/input';
-import { LootListComponent } from "./loot-list.component";
+import { LootListComponent, SCROLL_TOP_THRESHOLD } from "./loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "./loot.service";
 import { NotFoundComponent } from "./not-found.component";
@@ -25,7 +25,7 @@ enum PlayerViewMode {
   templateUrl: './player.component.html',
   styleUrl: './player.component.scss'
 })
-export class PlayerComponent implements OnDestroy, OnInit {
+export class PlayerComponent implements OnDestroy, OnInit, AfterViewInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
@@ -52,6 +52,11 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   mode: PlayerViewMode = PlayerViewMode.ViewLoot;
   m = PlayerViewMode;
+
+  canScrollTop: boolean = false;
+
+  @ViewChild('playerDiv')
+  el!: ElementRef;
 
   get isGood() {
     return this.statTypes.map(s =>
@@ -84,6 +89,12 @@ export class PlayerComponent implements OnDestroy, OnInit {
       this.players = players;
       this.loots = loots;
       this.pools = pools;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.el.nativeElement.addEventListener('scroll', () => {
+      this.canScrollTop = this.el.nativeElement.scrollTop > SCROLL_TOP_THRESHOLD;
     });
   }
 
@@ -191,6 +202,10 @@ export class PlayerComponent implements OnDestroy, OnInit {
       case PlayerStat.Focus:
         return 'cognition';
     }
+  }
+
+  scrollTop() {
+    this.el.nativeElement.scroll({top: 0, behavior: "smooth"});
   }
 
   readonly dialog = inject(MatDialog);

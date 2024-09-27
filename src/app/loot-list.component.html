@@ -1,4 +1,4 @@
-<div class="loot-list">
+<div #lootListDiv class="loot-list">
   @if (canFilter) {
     <div class="filter-drawer">
       <div class="loot-filter">
@@ -73,3 +73,6 @@
     </div>
   </div>
 </div>
+<button [style.visibility]="canScrollTop ? 'visible' : 'hidden'" class="scroll-top-button" mat-icon-button (click)="scrollTop()">
+  <mat-icon class="material-symbols-outlined">arrow_upward</mat-icon>
+</button>

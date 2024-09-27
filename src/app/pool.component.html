@@ -1,5 +1,5 @@
 @if (pool) {
-  <div class="pool">
+  <div #poolDiv class="pool">
     <div class="pool-info">
       <span class="pool-name mat-headline-small">{{pool.name}}</span>
       <div class="loot-view-modes">
@@ -29,6 +29,9 @@
       [hidden]="modeToHidden(mode)"
       (buttonPressed)="onSelect($event)" />
   </div>
+  <button [style.visibility]="canScrollTop ? 'visible' : 'hidden'" class="scroll-top-button" mat-icon-button (click)="scrollTop()">
+    <mat-icon class="material-symbols-outlined">arrow_upward</mat-icon>
+  </button>
 } @else {
   <not-found />
 }
