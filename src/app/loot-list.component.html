@@ -1,6 +1,6 @@
 <div #lootListDiv class="loot-list">
   @if (canFilter) {
-    <div class="filter-drawer">
+    <div [style.display]="showFilter ? '' : 'none'" class="filter-drawer">
       <div class="loot-filter">
         <div class="string-filters">
           <mat-form-field class="loot-filter-string" appearance="outline">
@@ -57,6 +57,9 @@
       </div>
     </div>
     <hr/>
+    <button class="toggle-filter-button" mat-icon-button (click)="toggleFilter()">
+      <mat-icon class="material-symbols-outlined">{{showFilter ? 'filter_list_off' : 'filter_list'}}</mat-icon>
+    </button>
   }
   <div class="loot-drawer">
     <div class="loots">

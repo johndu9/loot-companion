@@ -2,6 +2,9 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .filter-drawer {
@@ -51,6 +54,7 @@
 hr {
   margin: 8px;
   color: #e0e2ec;
+  align-self: stretch;
 }
 
 .loot-drawer {

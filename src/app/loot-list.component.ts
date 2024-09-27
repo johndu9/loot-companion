@@ -51,11 +51,16 @@ export class LootListComponent implements OnDestroy, AfterViewInit {
   @ViewChild('lootListDiv')
   el!: ElementRef;
 
+  get element(): HTMLElement {
+    return this.el.nativeElement;
+  }
+
   canScrollTop: boolean = false;
 
   filterTypes: LootType[] = [];
   filterSources: string[] = [];
   filterPools: string[] = [];
+  showFilter: boolean = true;
 
   selectedTypes: LootType[] | false = false;
   selectedSources: string[] | false = false;
@@ -112,7 +117,19 @@ export class LootListComponent implements OnDestroy, AfterViewInit {
     return hidden;
   }
 
+  toggleFilter() {
+    this.showFilter = !this.showFilter;
+    this.scrollTop();
+  }
+
   scrollTop() {
-    this.el.nativeElement.scroll({top: 0, behavior: "smooth"});
+    const parent = this.element.parentElement;
+    if (parent && parent.offsetTop > 64) {
+      // Desktop browser needs the delay
+      setTimeout(() =>
+        parent.parentElement?.scroll({top: parent.offsetTop - 64, behavior: "smooth"}), 1);
+    } else {
+      this.element.scroll({top: 0, behavior: "smooth"});
+    }
   }
 }
