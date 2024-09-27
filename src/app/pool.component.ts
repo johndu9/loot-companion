@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Loot, Pool } from "./loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -22,7 +22,7 @@ enum PoolViewMode {
   templateUrl: './pool.component.html',
   styleUrl: './pool.component.scss'
 })
-export class PoolComponent implements OnDestroy, OnInit {
+export class PoolComponent implements OnDestroy, OnInit, AfterViewInit {
 
   private readonly unsubscribe$ = new Subject<void>();
 
