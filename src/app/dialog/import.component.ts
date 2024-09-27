@@ -30,7 +30,7 @@ import { MatInputModule } from '@angular/material/input';
   ],
   styleUrl: './common-dialog.scss'
 })
-export class ImportDialog {
+export class ImportDialogComponent {
   file: File | false = false;
 
   onFileSelect(event: Event) {

@@ -112,7 +112,7 @@ export class PoolComponent implements OnDestroy, OnInit {
   readonly dialog = inject(MatDialog);
 
   deletePool() {
-    const dialogRef = this.dialog.open(DeletePoolDialog,
+    const dialogRef = this.dialog.open(DeletePoolDialogComponent,
       {data: {poolName: this.pool.name}});
 
     dialogRef.afterClosed().subscribe(result => {
@@ -149,6 +149,6 @@ interface DeletePoolData {
     MatDialogClose
   ],
 })
-class DeletePoolDialog {
+class DeletePoolDialogComponent {
   readonly data = inject<DeletePoolData>(MAT_DIALOG_DATA);
 }

@@ -74,7 +74,7 @@ export interface AddLootData {
 ],
   styleUrl: './common-dialog.scss'
 })
-export class AddLootDialog implements OnInit {
+export class AddLootDialogComponent implements OnInit {
 
   @ViewChild(LootCardComponent) card!: LootCardComponent;
 

@@ -33,6 +33,6 @@ import { MatInputModule } from '@angular/material/input';
   ],
   styleUrl: './common-dialog.scss'
 })
-export class AddPoolDialog {
+export class AddPoolDialogComponent {
   name: string = '';
 }

@@ -25,7 +25,7 @@ export class DeleteLootComponent {
 
   deleteLoot(event: {name: string, index: number}) {
     const pool = this.lootService.poolOfLoot(event.index);
-    const dialogRef = this.dialog.open(DeleteLootDialog,
+    const dialogRef = this.dialog.open(DeleteLootDialogComponent,
       {data: {lootName: event.name, poolName: pool ? pool.name : ''}});
 
     dialogRef.afterClosed().subscribe(result => {
@@ -62,6 +62,6 @@ interface DeleteData {
     MatDialogClose,
   ],
 })
-class DeleteLootDialog {
+class DeleteLootDialogComponent {
   readonly data = inject<DeleteData>(MAT_DIALOG_DATA);
 }

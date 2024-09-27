@@ -7,11 +7,11 @@ import { LootService } from "./loot.service";
 import { Player, Pool } from "./loot.defs";
 import { Subject, combineLatest, takeUntil } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { AddPlayerDialog } from "./dialog/add-player.component";
-import { AddPoolDialog } from "./dialog/add-pool.component";
-import { ConfirmResetDialog } from "./dialog/confirm-reset.component";
-import { AddLootData, AddLootDialog } from "./dialog/add-loot.component";
-import { ImportDialog } from "./dialog/import.component";
+import { AddPlayerDialogComponent } from "./dialog/add-player.component";
+import { AddPoolDialogComponent } from "./dialog/add-pool.component";
+import { ConfirmResetDialogComponent } from "./dialog/confirm-reset.component";
+import { AddLootData, AddLootDialogComponent } from "./dialog/add-loot.component";
+import { ImportDialogComponent } from "./dialog/import.component";
 
 @Component({
   selector: 'nav-list',
@@ -57,7 +57,7 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   reset() {
-    const dialogRef = this.dialog.open(ConfirmResetDialog);
+    const dialogRef = this.dialog.open(ConfirmResetDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.navigate(['browse']);
@@ -68,7 +68,7 @@ export class NavListComponent implements OnDestroy, OnInit {
 
   addLoot() {
     const data: AddLootData = { poolNames: this.nonPlayerPools.map(p => p.name) };
-    const dialogRef = this.dialog.open(AddLootDialog, { data });
+    const dialogRef = this.dialog.open(AddLootDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.lootService.addLootDef(result);
@@ -77,7 +77,7 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPlayer() {
-    const dialogRef = this.dialog.open(AddPlayerDialog);
+    const dialogRef = this.dialog.open(AddPlayerDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const playerIndex = this.players.length;
@@ -88,7 +88,7 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPool() {
-    const dialogRef = this.dialog.open(AddPoolDialog);
+    const dialogRef = this.dialog.open(AddPoolDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const poolIndex = this.pools.length;
@@ -103,7 +103,7 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   import() {
-    const dialogRef = this.dialog.open(ImportDialog);
+    const dialogRef = this.dialog.open(ImportDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.navigate(['browse']);

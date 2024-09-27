@@ -24,6 +24,6 @@ import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } fr
   ],
   styleUrl: './common-dialog.scss'
 })
-export class ConfirmResetDialog {
+export class ConfirmResetDialogComponent {
   name: string = '';
 }

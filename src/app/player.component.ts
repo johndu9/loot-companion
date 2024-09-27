@@ -196,7 +196,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
   readonly dialog = inject(MatDialog);
 
   deletePlayer() {
-    const dialogRef = this.dialog.open(DeletePlayerDialog,
+    const dialogRef = this.dialog.open(DeletePlayerDialogComponent,
       {data: {playerName: this.player.name}});
 
     dialogRef.afterClosed().subscribe(result => {
@@ -233,6 +233,6 @@ interface DeletePlayerData {
     MatDialogClose
   ],
 })
-class DeletePlayerDialog {
+class DeletePlayerDialogComponent {
   readonly data = inject<DeletePlayerData>(MAT_DIALOG_DATA);
 }
