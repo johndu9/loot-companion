@@ -11,7 +11,7 @@ import { AddPlayerDialogComponent } from "./dialog/add-player.component";
 import { AddPoolDialogComponent } from "./dialog/add-pool.component";
 import { ConfirmResetDialogComponent } from "./dialog/confirm-reset.component";
 import { AddLootData, AddLootDialogComponent } from "./dialog/add-loot.component";
-import { ImportDialogComponent } from "./dialog/import.component";
+import { ImportData, ImportDialogComponent } from "./dialog/import.component";
 
 @Component({
   selector: 'nav-list',
@@ -104,10 +104,10 @@ export class NavListComponent implements OnDestroy, OnInit {
 
   import() {
     const dialogRef = this.dialog.open(ImportDialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: ImportData) => {
       if (result) {
         this.navigate(['browse']);
-        this.lootService.import(result);
+        this.lootService.import(result.file, result.mode);
       }
     });
   }

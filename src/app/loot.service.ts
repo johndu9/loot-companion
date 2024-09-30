@@ -12,6 +12,11 @@ interface AppDef {
   playerDefs: Player[];
 }
 
+export enum ImportMode {
+  Override = 'Override',
+  AddNewLootOnly = 'Add New Loot Only'
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -62,10 +67,14 @@ export class LootService {
     return [playerPool, consumablePool, ...newSourcePools];
   }
 
+  private lootsToSourcePools(loots: Loot[]): Pool[] {
+    const sources = [...new Set(loots.map(l => l.sourcePool))];
+    return sources.map(s => new Pool(s, loots.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+  }
+
   resetDefs() {
     const ls = DEFAULT_LOOTS;
-    const sources = [...new Set(ls.map(l => l.sourcePool))];
-    const sourcePools = sources.map(s => new Pool(s, ls.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+    const sourcePools = this.lootsToSourcePools(ls);
     const initialPools = this.fromSourcePoolsToInitialPools(sourcePools);
     this._loots.next(ls);
     this._pools.next(initialPools);
@@ -216,16 +225,54 @@ export class LootService {
     a.parentElement?.removeChild(a);
   }
 
-  import(file: File) {
+  import(file: File, importMode: ImportMode = ImportMode.Override) {
     const fileReader = new FileReader();
     fileReader.readAsText(file, "UTF-8");
     fileReader.onload = () => {
       const result = (fileReader.result ?? '') as string;
       const appDef = JSON.parse(result) as AppDef;
       if (appDef && appDef.lootDefs && appDef.poolDefs && appDef.playerDefs) {
-        this._loots.next(appDef.lootDefs);
-        this._pools.next(appDef.poolDefs);
-        this._players.next(appDef.playerDefs);
+        switch (importMode) {
+          case ImportMode.Override: {
+            this._loots.next(appDef.lootDefs);
+            this._pools.next(appDef.poolDefs);
+            this._players.next(appDef.playerDefs);
+            break;
+          }
+          case ImportMode.AddNewLootOnly: {
+            const oldLoots = [...this.loots];
+            const newToCombinedMap = new Map<number, number>();
+            const foundIndices: number[] = [];
+            let notFound = 0;
+            appDef.lootDefs.forEach((nl, ni) => {
+              const iInOld = oldLoots.findIndex((ol, oi) => JSON.stringify(ol) === JSON.stringify(nl) && !foundIndices.includes(oi));
+              if (iInOld >= 0) {
+                newToCombinedMap.set(ni, iInOld);
+                foundIndices.push(iInOld);
+              } else {
+                newToCombinedMap.set(ni, this.loots.length + notFound);
+                notFound = notFound + 1;
+              }
+            });
+            const newLoots = appDef.lootDefs.filter((l, i) => (newToCombinedMap.get(i) ?? 0) >= this.loots.length);
+            const newLootsPoolNames = newLoots.map(l => l.sourcePool);
+            const combinedLoots = [...this.loots, ...newLoots];
+            const combinedSourcePools = this.lootsToSourcePools(combinedLoots);
+            const newSourcePools = combinedSourcePools.filter(cp => this.pools.findIndex(p => cp.name === p.name) < 0);
+            const updatedPools = this.pools.map(p => {
+              if (newLootsPoolNames.includes(p.name)) {
+                const newLootFromPool = combinedLoots.reduce((acc: number[], l, i) => (l.sourcePool === p.name && i >= this.loots.length) ? [...acc, i] : acc, []);
+                return new Pool(p.name, [...p.loots, ...newLootFromPool]);
+              } else {
+                return p;
+              }
+            });
+            const combinedPools = [...updatedPools, ...newSourcePools];
+            this._loots.next(combinedLoots);
+            this._pools.next(combinedPools);
+            break;
+          }
+        }
       }
     }
     fileReader.onerror = (error) => {
