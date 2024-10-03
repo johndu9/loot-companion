@@ -13,8 +13,9 @@ interface AppDef {
 }
 
 export enum ImportMode {
-  Override = 'Override',
-  AddNewLootOnly = 'Add New Loot Only'
+  UpdateAndAdd = 'Update and Add',
+  AddNewLootOnly = 'Add New Loot Only',
+  Override = 'Override'
 }
 
 @Injectable({
@@ -270,6 +271,58 @@ export class LootService {
             const combinedPools = [...updatedPools, ...newSourcePools];
             this._loots.next(combinedLoots);
             this._pools.next(combinedPools);
+            break;
+          }
+          case ImportMode.UpdateAndAdd: {
+            const oldLoots = [...this.loots];
+            const newToCombinedMap = new Map<number, number>();
+            const foundIndices: number[] = [];
+            let notFound = 0;
+            appDef.lootDefs.forEach((nl, ni) => {
+              const iInOld = oldLoots.findIndex((ol, oi) => JSON.stringify(ol) === JSON.stringify(nl) && !foundIndices.includes(oi));
+              if (iInOld >= 0) {
+                newToCombinedMap.set(ni, iInOld);
+                foundIndices.push(iInOld);
+              } else {
+                newToCombinedMap.set(ni, this.loots.length + notFound);
+                notFound = notFound + 1;
+              }
+            });
+            const newLoots = appDef.lootDefs.filter((l, i) => (newToCombinedMap.get(i) ?? 0) >= this.loots.length);
+            const combinedLoots = [...this.loots, ...newLoots];
+            // use appDef as source of truth for updating existing config
+            const updatedNewPools = appDef.poolDefs.map(p => new Pool(p.name, p.loots.map(l => newToCombinedMap.get(l) ?? 0)));
+            const newPoolsLoots = new Set(updatedNewPools.flatMap(p => p.loots));
+            const updatedOldPools = this.pools.map(op => {
+              const newPoolLoots = updatedNewPools.find(np => np.name === op.name)?.loots ?? [];
+              const oldPoolLoots = op.loots.filter(l => !newPoolsLoots.has(l));
+              return new Pool(op.name, [...oldPoolLoots, ...newPoolLoots]);
+            });
+            const onlyNewPools = updatedNewPools.filter(np => this.pools.findIndex(op => op.name === np.name) < 0);
+            const combinedPools = [...updatedOldPools, ...onlyNewPools];
+            const updatedNewPlayers = appDef.playerDefs.map(p => {
+              return {
+                ...p,
+                drained: p.drained.map(l => newToCombinedMap.get(l) ?? 0),
+                pool: combinedPools.findIndex(pool => pool.name === p.name)
+              } as Player;
+            });
+            const updatedOldPlayers = this.players.map(op => {
+              const newPlayerIndex = updatedNewPlayers.findIndex(np => np.name === op.name);
+              if (newPlayerIndex >= 0) {
+                return updatedNewPlayers[newPlayerIndex];
+              } else {
+                return {
+                  ...op,
+                  pool: combinedPools.findIndex(pool => pool.name === op.name)
+                } as Player;
+              }
+            });
+            const onlyNewPlayers = updatedNewPlayers.filter(np => this.players.findIndex(op => op.name === np.name) < 0);
+            const combinedPlayers = [...updatedOldPlayers, ...onlyNewPlayers];
+            this._loots.next(combinedLoots);
+            this._pools.next(combinedPools);
+            this._players.next(combinedPlayers);
             break;
           }
         }
