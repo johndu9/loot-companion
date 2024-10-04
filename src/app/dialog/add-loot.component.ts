@@ -94,7 +94,7 @@ export class AddLootDialogComponent implements OnInit {
       ],
       nonNullable: true
     }),
-    type: new FormControl<LootType>(LootType.WEAPON, {
+    type: new FormControl<LootType | undefined>(undefined, {
       validators: [
         Validators.required
       ],
