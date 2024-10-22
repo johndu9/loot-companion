@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LootListComponent } from './loot-list.component';
+import { LootListComponent } from './loot-view/common/loot-list.component';
 import { LootService } from './loot.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';

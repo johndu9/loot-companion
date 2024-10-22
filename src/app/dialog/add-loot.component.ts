@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import { Loot, LootType } from '../loot.defs';
-import { LootCardComponent } from "../loot-card.component";
+import { LootCardComponent } from "../loot-view/common/loot-card.component";
 
 export interface AddLootData {
   poolNames: string[];

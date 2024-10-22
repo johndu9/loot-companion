@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
-import { Loot, LootType, Pool } from "./loot.defs";
+import { Loot, LootType, Pool } from "../../loot.defs";
 import { MatChipsModule } from "@angular/material/chips";
 import { LootCardComponent } from "./loot-card.component";
 import { FormsModule } from "@angular/forms";
@@ -8,7 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatInputModule } from '@angular/material/input';
-import { LootService } from "./loot.service";
+import { LootService } from "../../loot.service";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 
 export const SCROLL_TOP_THRESHOLD = 500;

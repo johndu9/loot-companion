@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { PlayerComponent } from './player.component';
-import { LootListComponent } from './loot-list.component';
+import { PlayerComponent } from './loot-view/player.component';
+import { LootListComponent } from './loot-view/common/loot-list.component';
 import { DeleteLootComponent } from './delete-loot.component';
-import { PoolComponent } from './pool.component';
+import { PoolComponent } from './loot-view/pool.component';
 import { AboutComponent } from './about.component';
 import { NotFoundComponent } from './not-found.component';
 

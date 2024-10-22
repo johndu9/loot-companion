@@ -1,7 +1,6 @@
 @if (player) {
-  <div #playerDiv class="player">
-    <div class="player-info">
-      <span class="player-name mat-headline-small">{{player.name}}</span>
+  <loot-list-info [name]="player.name">
+    <div class="player-info" info>
       <div class="player-stats">
         @for (s of statTypes; track $index) {
           <div class="player-stat">
@@ -34,25 +33,12 @@
         }
       </div>
       <div class="loot-view-modes">
-        <button class="loot-view-mode" mat-flat-button (click)="mode = m.ViewLoot">
-          <mat-icon class="material-symbols-outlined">bolt</mat-icon>
-          Character Loot
-        </button>
-        <button class="loot-view-mode" mat-flat-button (click)="mode = m.AddLoot">
-          <mat-icon class="material-symbols-outlined">add</mat-icon>
-          Add Loot
-        </button>
-        <button class="loot-view-mode" mat-flat-button (click)="mode = m.RemoveLoot">
-          <mat-icon class="material-symbols-outlined">remove</mat-icon>
-          Remove Loot
-        </button>
-        <button class="loot-view-mode mat-warn" mat-flat-button (click)="deletePlayer()">
-          <mat-icon class="material-symbols-outlined">person_remove</mat-icon>
-          Delete Character
-        </button>
+        <loot-list-info-button text="Character Loot" icon="bolt" (buttonPressed)="mode = m.ViewLoot" />
+        <loot-list-info-button text="Add Loot" icon="add" (buttonPressed)="mode = m.AddLoot" />
+        <loot-list-info-button text="Remove Loot" icon="remove" (buttonPressed)="mode = m.RemoveLoot" />
+        <loot-list-info-button text="Delete Character" icon="person_remove" [isWarn]="true" (buttonPressed)="deletePlayer()" />
       </div>
     </div>
-    <hr>
     <loot-list
       [buttonText]="modeToButtonText(mode)"
       [buttonIcon]="modeToButtonIcon(mode)"
@@ -60,10 +46,7 @@
       [hidden]="modeToHidden(mode)"
       [charged]="charged"
       (buttonPressed)="onSelect($event)" />
-  </div>
-  <button [style.visibility]="canScrollTop ? 'visible' : 'hidden'" class="scroll-top-button" mat-icon-button (click)="scrollTop()">
-    <mat-icon class="material-symbols-outlined">arrow_upward</mat-icon>
-  </button>
+  </loot-list-info>
 } @else {
   <not-found />
 }

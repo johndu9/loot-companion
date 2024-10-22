@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Loot, LootType } from "./loot.defs";
+import { Loot, LootType } from "../../loot.defs";
 import { NgIf, NgClass } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
