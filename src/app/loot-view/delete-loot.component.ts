@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { LootListComponent } from './loot-view/common/loot-list.component';
-import { LootService } from './loot.service';
+import { LootListButtonData, LootListComponent } from './common/loot-list.component';
+import { LootService } from '../loot.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from './dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../dialog/confirm-dialog.component';
 
 @Component({
   selector: 'delete-loot',
@@ -10,20 +10,17 @@ import { ConfirmDialogComponent, ConfirmDialogData } from './dialog/confirm-dial
   imports: [LootListComponent],
   template: `
 <loot-list
-  [buttonIcon]="'delete_forever'"
-  [buttonText]="'Delete loot'"
-  [isButtonWarn]="true"
+  [buttonInfos]="[{icon: 'delete_forever', text: 'Delete loot', isWarn: true}]"
   (buttonPressed)="deleteLoot($event)"
   />
-`,
-  styleUrl: './app.component.scss'
+`
 })
 export class DeleteLootComponent {
   constructor(private lootService: LootService) { }
 
   readonly dialog = inject(MatDialog);
 
-  deleteLoot(event: {name: string, index: number}) {
+  deleteLoot(event: LootListButtonData) {
     const lootName = event.name;
     const pool = this.lootService.poolOfLoot(event.index);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {

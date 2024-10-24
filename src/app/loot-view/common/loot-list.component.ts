@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
 import { Loot, LootType, Pool } from "../../loot.defs";
 import { MatChipsModule } from "@angular/material/chips";
-import { LootCardComponent } from "./loot-card.component";
+import { LootCardButtonInfo, LootCardComponent } from "./loot-card.component";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -12,6 +12,12 @@ import { LootService } from "../../loot.service";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 
 export const SCROLL_TOP_THRESHOLD = 500;
+
+export interface LootListButtonData {
+  name: string,
+  index: number,
+  buttonText: string
+}
 
 @Component({
   selector: 'loot-list',
@@ -37,16 +43,10 @@ export class LootListComponent implements OnDestroy, AfterViewInit {
   canFilter: boolean = true;
 
   @Input()
-  buttonText: string[] | string = [];
-
-  @Input()
-  buttonIcon: string[] | string = [];
-
-  @Input()
-  isButtonWarn: boolean = false;
+  buttonInfos: LootCardButtonInfo[][] | LootCardButtonInfo[] = [];
 
   @Output()
-  buttonPressed = new EventEmitter<{name: string, index: number}>();
+  buttonPressed = new EventEmitter<LootListButtonData>();
 
   @ViewChild('lootListDiv')
   el!: ElementRef;
@@ -91,15 +91,15 @@ export class LootListComponent implements OnDestroy, AfterViewInit {
     });
   }
 
-  indexOfArrOrString(field: string[] | string, index: number): string {
-    if (field) {
-      if (typeof field === 'string' || field instanceof String) {
-        return field as string;
-      } else if (field.length === this.loots.length) {
-        return field[index];
+  buttonsOfLoot(index: number): LootCardButtonInfo[] {
+    if ((this.buttonInfos ?? []).length > 0) {
+      if (Array.isArray(this.buttonInfos[0])) {
+        return this.buttonInfos[index] as LootCardButtonInfo[];
+      } else {
+        return this.buttonInfos as LootCardButtonInfo[];
       }
     }
-    return '';
+    return [];
   }
 
   isLootHidden(loot: Loot, index: number) {

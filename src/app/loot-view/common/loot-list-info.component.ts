@@ -60,6 +60,7 @@ hr {
 
 ::ng-deep loot-list {
   flex-grow: 1;
+  width: 100%;
 
   @media(min-width: 768px) {
     max-height: calc(100vh - 64px);

@@ -68,10 +68,8 @@
           [hidden]="isLootHidden(l, $index)"
           [loot]="l"
           [isCharged]="charged && charged.length === loots.length ? charged[$index] : true"
-          [buttonText]="indexOfArrOrString(buttonText, $index)"
-          [buttonIcon]="indexOfArrOrString(buttonIcon, $index)"
-          [isButtonWarn]="isButtonWarn"
-          (buttonPressed)="buttonPressed.emit({name: $event, index: $index})" />
+          [buttonInfos]="buttonsOfLoot($index)"
+          (buttonPressed)="buttonPressed.emit({name: l.name, index: $index, buttonText: $event})" />
       }
     </div>
   </div>

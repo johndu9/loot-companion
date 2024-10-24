@@ -96,8 +96,16 @@ $card-w: 280px;
     flex-grow: 1;
     align-items: end;
 
-    button {
-      flex-grow: 1;
+    .loot-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
     }
   }
 }

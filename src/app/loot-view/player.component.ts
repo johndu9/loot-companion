@@ -2,7 +2,7 @@ import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { Loot, Player, PlayerStat, Pool } from "../loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { LootListComponent } from "./common/loot-list.component";
+import { LootListButtonData, LootListComponent } from "./common/loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "../loot.service";
 import { NotFoundComponent } from "../not-found.component";
@@ -11,12 +11,17 @@ import { Router } from "@angular/router";
 import { LootListInfoButtonComponent } from "./common/loot-list-info-button.component";
 import { LootListInfoComponent } from "./common/loot-list-info.component";
 import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dialog.component";
+import { LootCardButtonInfo } from "./common/loot-card.component";
 
 enum PlayerViewMode {
   ViewLoot,
-  AddLoot,
-  RemoveLoot,
+  AddLoot
 }
+
+const useChargeButton: LootCardButtonInfo = {text: 'Use Charge', icon: 'bolt'};
+const restoreChargeButton: LootCardButtonInfo = {text: 'Restore Charge', icon: 'replay'};
+const removeButton: LootCardButtonInfo = {text: 'Remove', icon: 'remove', isWarn: true};
+const addButton: LootCardButtonInfo = {text: 'Add', icon: 'add'};
 
 @Component({
   selector: 'player',
@@ -76,8 +81,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
       : false);
   }
 
-  constructor(private lootService: LootService, private router: Router) {
-  }
+  constructor(private lootService: LootService, private router: Router) {}
 
   ngOnInit(): void {
     combineLatest([this.lootService.players$, this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([players, loots, pools]) => {
@@ -94,77 +98,56 @@ export class PlayerComponent implements OnDestroy, OnInit {
   modeToHidden(mode: PlayerViewMode) {
     switch (mode) {
       case PlayerViewMode.ViewLoot:
-      case PlayerViewMode.RemoveLoot:
         return this.inPlayerPool.map(i => !i);
       case PlayerViewMode.AddLoot:
         return this.inPlayerPool;
     }
   }
 
-  modeToButtonText(mode: PlayerViewMode): string[] | string {
+  modeToButtonInfos(mode: PlayerViewMode): LootCardButtonInfo[][] {
     switch (mode) {
       case PlayerViewMode.ViewLoot:
-        return this.loots.map((l, i) => {
+        return this.loots.map((l, i): LootCardButtonInfo[] => {
           if (l.charged) {
             if (this.inPlayerPool[i]) {
               if (this.charged[i]) {
-                return 'Use Charge';
+                return [useChargeButton, removeButton];
               } else {
-                return 'Restore Charge';
+                return [restoreChargeButton, removeButton];
               }
             }
           }
-          return '';
+          return [removeButton];
         })
-      case PlayerViewMode.RemoveLoot:
-        return 'Remove';
       case PlayerViewMode.AddLoot:
-        return 'Add';
+        return new Array(this.loots.length).fill([addButton]);
     }
   }
 
-  modeToButtonIcon(mode: PlayerViewMode): string[] | string {
-    const buttonText = this.modeToButtonText(mode);
-    if (typeof buttonText === 'string' || buttonText instanceof String) {
-      switch (buttonText) {
-        case 'Remove': return 'remove';
-        case 'Add': return 'add';
-        default: return '';
-      }
-    } else {
-      return buttonText.map(t => {
-        switch (t) {
-          case 'Use Charge': return 'bolt';
-          case 'Restore Charge': return 'replay';
-          default: return '';
-        }
-      });
-    }
-  }
-
-  onSelect(event: {name: string, index: number}) {
+  onSelect(event: LootListButtonData) {
     if (this.player) {
       const pi = this.pools[this.player.pool].loots.findIndex(l => l === event.index);
-      switch (this.mode) {
-        case PlayerViewMode.ViewLoot: {
+      switch (event.buttonText) {
+        case useChargeButton.text: {
           if (pi >= 0) {
-            const c = this.charged[event.index];
-            if (c) {
-              this.lootService.drainLoot(event.index);
-            } else {
-              this.lootService.chargeLoot(event.index);
-            }
+            this.lootService.drainLoot(event.index);
           }
           break;
         }
-        case PlayerViewMode.RemoveLoot: {
+        case restoreChargeButton.text: {
+          if (pi >= 0) {
+            this.lootService.chargeLoot(event.index);
+          }
+          break;
+        }
+        case removeButton.text: {
           if (pi >= 0) {
             this.lootService.chargeLoot(event.index);
             this.lootService.moveLootToPool(event.index, this.pools.findIndex(p => this.loots[event.index].sourcePool === p.name));
           }
           break;
         }
-        case PlayerViewMode.AddLoot: {
+        case addButton.text: {
           this.lootService.moveLootToPool(event.index, this.pools.findIndex((p, i) => (this.player?.pool ?? -1) === i));
           break;
         }

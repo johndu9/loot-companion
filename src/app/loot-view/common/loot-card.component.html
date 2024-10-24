@@ -18,10 +18,14 @@
       <div class="loot-charged mat-body-medium" [innerHTML]="chargedHtml"></div>
     </div>
   </mat-card-content>
-  <mat-card-footer *ngIf="buttonText.length > 0" class="loot-footer">
-    <button [class.mat-warn]="isButtonWarn" mat-flat-button (click)="buttonPressed.emit(loot.name)">
-      <mat-icon class="material-symbols-outlined">{{buttonIcon}}</mat-icon>
-      {{buttonText}}
-    </button>
+  <mat-card-footer *ngIf="buttonInfos.length > 0" class="loot-footer">
+    <div class="loot-actions">
+      @for (button of buttonInfos; track $index) {
+        <button [class.mat-warn]="button.isWarn ?? false" mat-flat-button (click)="buttonPressed.emit(button.text)">
+          <mat-icon class="material-symbols-outlined">{{button.icon ?? ''}}</mat-icon>
+          {{button.text}}
+        </button>
+      }
+    </div>
   </mat-card-footer>
 </mat-card>

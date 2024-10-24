@@ -7,6 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
+export interface LootCardButtonInfo {
+  text: string;
+  icon?: string;
+  isWarn?: boolean;
+}
+
 @Component({
   selector: 'loot-card',
   standalone: true,
@@ -23,13 +29,7 @@ export class LootCardComponent implements OnInit {
   isCharged: boolean = true;
 
   @Input()
-  buttonIcon: string = '';
-
-  @Input()
-  buttonText: string = '';
-
-  @Input()
-  isButtonWarn: boolean = false;
+  buttonInfos: LootCardButtonInfo[] = [];
 
   @Output()
   buttonPressed = new EventEmitter<string>();
