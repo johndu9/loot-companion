@@ -2,3 +2,25 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+@media print {
+  * { overflow: visible !important; }
+  body {
+    visibility: hidden;
+  }
+  .loots {
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+    .loot-card {
+      break-inside: avoid;
+      min-width: 280px;
+      min-height: 280px;
+
+      button {
+        display: none;
+      }
+    }
+  }
+}
