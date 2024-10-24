@@ -9,9 +9,9 @@ import { Subject, combineLatest, takeUntil } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import { AddPlayerDialogComponent } from "./dialog/add-player.component";
 import { AddPoolDialogComponent } from "./dialog/add-pool.component";
-import { ConfirmResetDialogComponent } from "./dialog/confirm-reset.component";
 import { AddLootData, AddLootDialogComponent } from "./dialog/add-loot.component";
 import { ImportData, ImportDialogComponent } from "./dialog/import.component";
+import { ConfirmDialogComponent, ConfirmDialogData } from "./dialog/confirm-dialog.component";
 
 @Component({
   selector: 'nav-list',
@@ -57,7 +57,12 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   reset() {
-    const dialogRef = this.dialog.open(ConfirmResetDialogComponent);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
+      title: 'Reset LOOT Squire',
+      description: 'This will reset loot, character, and pools to defaults. Are you sure?',
+      buttonText: 'Reset',
+      isWarn: true
+    } as ConfirmDialogData });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.navigate(['browse']);

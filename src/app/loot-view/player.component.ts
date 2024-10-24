@@ -6,10 +6,11 @@ import { LootListComponent } from "./common/loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
 import { LootService } from "../loot.service";
 import { NotFoundComponent } from "../not-found.component";
-import { MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { LootListInfoButtonComponent } from "./common/loot-list-info-button.component";
 import { LootListInfoComponent } from "./common/loot-list-info.component";
+import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dialog.component";
 
 enum PlayerViewMode {
   ViewLoot,
@@ -195,8 +196,12 @@ export class PlayerComponent implements OnDestroy, OnInit {
   readonly dialog = inject(MatDialog);
 
   deletePlayer() {
-    const dialogRef = this.dialog.open(DeletePlayerDialogComponent,
-      {data: {playerName: this.player.name}});
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
+      title: `Deleting ${this.player.name}`,
+      description: 'Are you sure?',
+      buttonText: 'Delete',
+      isWarn: true
+    } as ConfirmDialogData });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -205,33 +210,4 @@ export class PlayerComponent implements OnDestroy, OnInit {
       }
     });
   }
-}
-
-interface DeletePlayerData {
-  playerName: string;
-}
-
-@Component({
-  selector: 'delete-player-dialog',
-  template: `
-<span mat-dialog-title>Deleting {{data.playerName}}</span>
-<mat-dialog-content>
-  <span class="mat-body-medium">Are you sure?</span>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="false">Cancel</button>
-  <button mat-button [mat-dialog-close]="true" class="mat-warn" cdkFocusInitial>Delete</button>
-</mat-dialog-actions>
-`,
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose
-  ],
-})
-class DeletePlayerDialogComponent {
-  readonly data = inject<DeletePlayerData>(MAT_DIALOG_DATA);
 }
