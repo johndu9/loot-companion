@@ -10,12 +10,13 @@ import { LootCardComponent } from "../loot-view/common/loot-card.component";
 
 export interface AddLootData {
   poolNames: string[];
+  loot?: Loot;
 }
 
 @Component({
   selector: 'add-loot-dialog',
   template: `
-<span mat-dialog-title>New Loot</span>
+<span mat-dialog-title>{{data.loot ? 'Edit Loot' : 'New Loot'}}</span>
 <mat-dialog-content>
   <form [formGroup]="lootForm">
     <mat-form-field class="dialog-string" appearance="outline">
@@ -55,7 +56,7 @@ export interface AddLootData {
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button [mat-dialog-close]="false">Cancel</button>
-  <button mat-button [mat-dialog-close]="loot" [disabled]="!lootForm.valid">Add</button>
+  <button mat-button [mat-dialog-close]="loot" [disabled]="!lootForm.valid">{{data.loot ? 'Update' : 'Add'}}</button>
 </mat-dialog-actions>
 `,
   standalone: true,
@@ -88,22 +89,22 @@ export class AddLootDialogComponent implements OnInit {
   }
 
   lootForm = new FormGroup({
-    name: new FormControl('', {
+    name: new FormControl(this.data.loot?.name ?? '', {
       validators: [
         Validators.required
       ],
       nonNullable: true
     }),
-    type: new FormControl<LootType | undefined>(undefined, {
+    type: new FormControl<LootType | undefined>(this.data.loot?.type, {
       validators: [
         Validators.required
       ],
       nonNullable: true
     }),
-    basic: new FormControl<string>('', { nonNullable: true }),
-    charged: new FormControl<string>('', { nonNullable: true }),
-    description: new FormControl<string>('', { nonNullable: true }),
-    source: new FormControl<string>('', {
+    basic: new FormControl<string>(this.data.loot?.basic ?? '', { nonNullable: true }),
+    charged: new FormControl<string>(this.data.loot?.charged ?? '', { nonNullable: true }),
+    description: new FormControl<string>(this.data.loot?.description ?? '', { nonNullable: true }),
+    source: new FormControl<string>(this.data.loot?.sourcePool ?? '', {
       validators: [
         Validators.required
       ],

@@ -96,6 +96,10 @@ export class LootService {
     }
   }
 
+  updateLootDef(lootIndex: number, loot: Loot) {
+    this._loots.next(this.replace(this.loots, lootIndex, loot));
+  }
+
   removeLootDef(lootIndex: number) {
     this._loots.next([...this.loots].filter((l, i) => i !== lootIndex));
 
