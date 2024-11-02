@@ -125,6 +125,13 @@ export class LootService {
     }
   }
 
+  updatePlayer(playerIndex: number, player: Player) {
+    const poolIndex = player.pool;
+    const pool = {...this.pools[poolIndex], name: player.name} as Pool;
+    this._players.next(this.replace(this.players, playerIndex, player));
+    this._pools.next(this.replace(this.pools, poolIndex, pool));
+  }
+
   removePlayer(playerIndex: number) {
     const playerPoolIndex = this.players[playerIndex].pool;
     this._pools.next(this.returnLootToSources(playerPoolIndex).filter((p, i) => i !== playerPoolIndex));
@@ -168,6 +175,13 @@ export class LootService {
     } else {
       this._pools.next([...this.pools, new Pool(name)]);
     }
+  }
+
+  updatePool(poolIndex: number, pool: Pool) {
+    const playerIndex = this.players.findIndex(p => p.pool === poolIndex);
+    const player = {...this.players[playerIndex], name: pool.name};
+    this._pools.next(this.replace(this.pools, poolIndex, pool));
+    this._players.next(this.replace(this.players, playerIndex, player));
   }
 
   removePool(poolIndex: number) {

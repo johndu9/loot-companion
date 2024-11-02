@@ -82,11 +82,12 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPlayer() {
-    const dialogRef = this.dialog.open(AddPlayerDialogComponent);
+    const dialogRef = this.dialog.open(AddPlayerDialogComponent, { data: {} });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        const player = result as Player;
         const playerIndex = this.players.length;
-        this.lootService.addPlayer(result);
+        this.lootService.addPlayer(player.name);
         this.navigate(['player', playerIndex]);
       }
     });

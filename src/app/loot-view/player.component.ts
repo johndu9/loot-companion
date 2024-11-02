@@ -12,6 +12,7 @@ import { LootListInfoButtonComponent } from "./common/loot-list-info-button.comp
 import { LootListInfoComponent } from "./common/loot-list-info.component";
 import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dialog.component";
 import { LootCardButtonInfo } from "./common/loot-card.component";
+import { AddPlayerData, AddPlayerDialogComponent } from "../dialog/add-player.component";
 
 enum PlayerViewMode {
   ViewLoot,
@@ -177,6 +178,16 @@ export class PlayerComponent implements OnDestroy, OnInit {
   }
 
   readonly dialog = inject(MatDialog);
+
+  editPlayer() {
+    const data: AddPlayerData = { player: this.player, pools: this.pools };
+    const dialogRef = this.dialog.open(AddPlayerDialogComponent, { data });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lootService.updatePlayer(this.playerIndex, result);
+      }
+    });
+  }
 
   deletePlayer() {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {

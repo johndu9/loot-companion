@@ -35,6 +35,7 @@
       <div class="loot-view-modes">
         <loot-list-info-button text="Character Loot" icon="bolt" (buttonPressed)="mode = m.ViewLoot" />
         <loot-list-info-button text="Add Loot" icon="add" (buttonPressed)="mode = m.AddLoot" />
+        <loot-list-info-button text="Edit Character" icon="edit" (buttonPressed)="editPlayer()" />
         <loot-list-info-button text="Delete Character" icon="person_remove" [isWarn]="true" (buttonPressed)="deletePlayer()" />
       </div>
     </div>
