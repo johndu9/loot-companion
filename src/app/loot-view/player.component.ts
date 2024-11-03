@@ -143,8 +143,7 @@ export class PlayerComponent implements OnDestroy, OnInit {
         }
         case removeButton.text: {
           if (pi >= 0) {
-            this.lootService.chargeLoot(event.index);
-            this.lootService.moveLootToPool(event.index, this.pools.findIndex(p => this.loots[event.index].sourcePool === p.name));
+            this.removeLoot(event.index);
           }
           break;
         }
@@ -201,6 +200,23 @@ export class PlayerComponent implements OnDestroy, OnInit {
       if (result) {
         this.router.navigate(['']);
         this.lootService.removePlayer(this.playerIndex);
+      }
+    });
+  }
+
+  removeLoot(lootIndex: number) {
+    const loot = this.loots[lootIndex];
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
+      title: `Removing ${loot.name} from ${this.player.name}`,
+      description: 'Are you sure?',
+      buttonText: 'Remove',
+      isWarn: true
+    } as ConfirmDialogData });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lootService.chargeLoot(lootIndex);
+        this.lootService.moveLootToPool(lootIndex, this.pools.findIndex(p => loot.sourcePool === p.name));
       }
     });
   }

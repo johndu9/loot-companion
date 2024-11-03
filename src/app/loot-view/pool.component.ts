@@ -90,7 +90,7 @@ export class PoolComponent implements OnDestroy, OnInit {
     if (this.pool) {
       switch (event.buttonText) {
         case removeButton.text: {
-          this.lootService.moveLootToPool(event.index, this.pools.findIndex(p => this.loots[event.index].sourcePool === p.name));
+          this.removeLoot(event.index);
           break;
         }
         case addButton.text: {
@@ -126,6 +126,22 @@ export class PoolComponent implements OnDestroy, OnInit {
       if (result) {
         this.router.navigate(['']);
         this.lootService.removePool(this.poolIndex);
+      }
+    });
+  }
+
+  removeLoot(lootIndex: number) {
+    const loot = this.loots[lootIndex];
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
+      title: `Moving ${loot.name} from ${this.pool.name} to ${loot.sourcePool}`,
+      description: 'Are you sure?',
+      buttonText: 'Remove',
+      isWarn: true
+    } as ConfirmDialogData });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lootService.moveLootToPool(lootIndex, this.pools.findIndex(p => loot.sourcePool === p.name));
       }
     });
   }
