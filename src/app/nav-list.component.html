@@ -36,13 +36,15 @@
   </mat-list-item>
   <hr>
   <div mat-subheader class="mat-title-medium">Pools</div>
-  @for (pool of nonPlayerPools; track pool.name + $index) {
-    <mat-list-item [activated]="isActive(['pool', $index])" (click)="navigate(['pool', $index])">
-      <div class="nav-item">
-        <mat-icon class="material-symbols-outlined">filter_none</mat-icon>
-        <span class="nav-item-name mat-body-medium">{{pool.name}}</span>
-      </div>
-    </mat-list-item>
+  @for (pool of pools; track pool.name + $index) {
+    @if (nonPlayerPools.includes(pool)) {
+      <mat-list-item [activated]="isActive(['pool', $index])" (click)="navigate(['pool', $index])">
+        <div class="nav-item">
+          <mat-icon class="material-symbols-outlined">filter_none</mat-icon>
+          <span class="nav-item-name mat-body-medium">{{pool.name}}</span>
+        </div>
+      </mat-list-item>
+    }
   }
   <mat-list-item (click)="addPool()">
     <div class="nav-item">
