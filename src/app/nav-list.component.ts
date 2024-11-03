@@ -94,11 +94,12 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPool() {
-    const dialogRef = this.dialog.open(AddPoolDialogComponent);
+    const dialogRef = this.dialog.open(AddPoolDialogComponent, { data: {} });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        const pool = result as Pool;
         const poolIndex = this.pools.length;
-        this.lootService.addPool(result);
+        this.lootService.addPool(pool.name);
         this.navigate(['pool', poolIndex]);
       }
     });
