@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { Loot, Player, PlayerStat, Pool } from "../loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -32,7 +32,7 @@ const addButton: LootCardButtonInfo = {text: 'Add', icon: 'add'};
   templateUrl: './player.component.html',
   styleUrl: './player.component.scss'
 })
-export class PlayerComponent implements OnDestroy, OnInit {
+export class PlayerComponent implements OnDestroy, OnInit, OnChanges {
 
   private readonly unsubscribe$ = new Subject<void>();
 
@@ -95,6 +95,12 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['playerIndex']) {
+      this.mode = PlayerViewMode.ViewLoot;
+    }
   }
   
   modeToHidden(mode: PlayerViewMode) {

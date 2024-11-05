@@ -72,6 +72,7 @@ export class PoolComponent implements OnDestroy, OnInit, OnChanges {
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['poolIndex']) {
+      this.mode = PoolViewMode.ViewLoot;
       await this.refreshDescription();
     }
   }
