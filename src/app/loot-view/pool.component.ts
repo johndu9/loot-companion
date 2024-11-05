@@ -1,10 +1,10 @@
-import { Component, inject, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { Loot, Pool } from "../loot.defs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { LootListButtonData, LootListComponent } from "./common/loot-list.component";
 import { combineLatest, Subject, takeUntil } from "rxjs";
-import { LootService } from "../loot.service";
+import { LootService, md } from "../loot.service";
 import { NotFoundComponent } from "../not-found.component";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
@@ -13,6 +13,7 @@ import { LootListInfoButtonComponent } from "./common/loot-list-info-button.comp
 import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dialog.component";
 import { LootCardButtonInfo } from "./common/loot-card.component";
 import { AddPoolData, AddPoolDialogComponent } from "../dialog/add-pool.component";
+import { AsyncPipe } from "@angular/common";
 
 enum PoolViewMode {
   ViewLoot,
@@ -25,11 +26,11 @@ const addButton: LootCardButtonInfo = {text: 'Add', icon: 'add'};
 @Component({
   selector: 'pool',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, LootListComponent, NotFoundComponent, LootListInfoComponent, LootListInfoButtonComponent],
+  imports: [MatButtonModule, MatIconModule, LootListComponent, NotFoundComponent, LootListInfoComponent, LootListInfoButtonComponent, AsyncPipe],
   templateUrl: './pool.component.html',
   styleUrl: './pool.component.scss'
 })
-export class PoolComponent implements OnDestroy, OnInit {
+export class PoolComponent implements OnDestroy, OnInit, OnChanges {
 
   private readonly unsubscribe$ = new Subject<void>();
 
@@ -51,19 +52,31 @@ export class PoolComponent implements OnDestroy, OnInit {
 
   mode: PoolViewMode = PoolViewMode.ViewLoot;
   m = PoolViewMode;
+  descriptionHtml: string = '';
 
   constructor(private lootService: LootService, private router: Router) {
   }
 
   ngOnInit(): void {
-    combineLatest([this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([loots, pools]) => {
+    combineLatest([this.lootService.loots$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(async ([loots, pools]) => {
       this.loots = loots;
       this.pools = pools;
+      await this.refreshDescription();
     });
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['poolIndex']) {
+      await this.refreshDescription();
+    }
+  }
+
+  async refreshDescription() {
+    this.descriptionHtml = await md(this.pool?.description ?? '');
   }
 
   modeToHidden(mode: PoolViewMode) {

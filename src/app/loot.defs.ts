@@ -33,17 +33,18 @@ export class Consumable extends Loot {
 export class Pool {
   constructor(
     public name: string,
+    public description: string,
     public loots: number[] = []
   ) {}
 
   static removeLoot(pool: Pool, lootIndex: number) {
-    return new Pool(pool.name, pool.loots.filter(l => l !== lootIndex));
+    return {...pool, loots: pool.loots.filter(l => l !== lootIndex)} as Pool;
   }
   static addLoot(pool: Pool, lootIndex: number) {
-    return new Pool(pool.name, [...pool.loots, lootIndex]);
+    return {...pool, loots: [...pool.loots, lootIndex]} as Pool;
   }
   static adjustLootIndices(pool: Pool, lootIndex: number) {
-    return new Pool(pool.name, pool.loots.map(l => l > lootIndex ? l - 1 : l));
+    return {...pool, loots: pool.loots.map(l => l > lootIndex ? l - 1 : l)} as Pool;
   }
 }
 
@@ -77,6 +78,15 @@ export class Player {
   static getMax(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfMax(stat)]; }
   static getCurrent(player: Player, stat: PlayerStat) { return player.stats[Player.indexOfCurrent(stat)]; }
 }
+
+export const DEFAULT_POOLS: Pool[] = [
+  new Pool('Loot Pool', 'Players are paid loot from this pool'),
+  new Pool('Consumable Pool', 'Players receive consumables from this pool'),
+  new Pool('Initiate', 'Loot for character creation'),
+  new Pool('Consumable', 'Initial set of consumables'),
+  new Pool('Starter', 'Loot Pool starter loot'),
+  new Pool('City', 'Main source of loot')
+]
 
 export const DEFAULT_LOOTS: Loot[] = [
   new Loot('Simple Sword', LootType.WEAPON, 'Initiate', {

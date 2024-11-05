@@ -4,8 +4,7 @@ import { NgIf, NgClass } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from '@angular/material/icon';
-import { marked } from "marked";
-import DOMPurify from "dompurify";
+import { md } from "../../loot.service";
 
 export interface LootCardButtonInfo {
   text: string;
@@ -64,22 +63,9 @@ export class LootCardComponent implements OnInit {
 
   async refreshBody() {
     // the uponSanitizeElement hook is expensive when run from dom, use fields instead
-    this.descriptionHtml = await this.md(this.loot.description);
-    this.basicHtml = await this.md(this.loot.basic);
-    this.chargedHtml = await this.md(this.loot.charged);
-  }
-
-  async md(input: string) {
-    const output = await marked.parse(input);
-    // replace <p> with <span> for CSS purposes
-    DOMPurify.addHook("uponSanitizeElement",
-      (n) => {
-        if (n.tagName?.toLowerCase() === 'p' && n.parentNode) {
-          n.outerHTML = n.outerHTML.replace(/^<p(.*)p>$/, '<span$1span>');
-        }
-      }
-    );
-    return DOMPurify.sanitize(output, { ALLOWED_TAGS: ['span', 'em'] });
+    this.descriptionHtml = await md(this.loot.description);
+    this.basicHtml = await md(this.loot.basic);
+    this.chargedHtml = await md(this.loot.charged);
   }
 
   typeToIcon(type: LootType) {

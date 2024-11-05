@@ -7,6 +7,17 @@
   min-width: 280px;
 }
 
+.pool-description {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 280px;
+
+  ::ng-deep p {
+    margin: 0;
+  }
+}
+
 .loot-view-modes {
   display: flex;
   flex-direction: column;

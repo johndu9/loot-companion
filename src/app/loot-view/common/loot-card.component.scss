@@ -85,6 +85,10 @@ $card-w: 280px;
       gap: 8px;
 
       margin-bottom: 8px;
+
+      ::ng-deep p {
+        margin: 0;
+      }
     }
   }
 

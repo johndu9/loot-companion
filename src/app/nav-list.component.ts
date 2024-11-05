@@ -99,7 +99,7 @@ export class NavListComponent implements OnDestroy, OnInit {
       if (result) {
         const pool = result as Pool;
         const poolIndex = this.pools.length;
-        this.lootService.addPool(pool.name);
+        this.lootService.addPool(pool.name, pool.description);
         this.navigate(['pool', poolIndex]);
       }
     });

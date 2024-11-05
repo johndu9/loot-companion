@@ -1,6 +1,7 @@
 @if (pool) {
   <loot-list-info [name]="pool.name">
     <div class="pool-info" info>
+      <div class="pool-description" [innerHTML]="descriptionHtml"></div>
       <div class="loot-view-modes">
         <loot-list-info-button text="Pool Loot" icon="grid_view" (buttonPressed)="mode = m.ViewLoot" />
         <loot-list-info-button text="Add Loot" icon="add" (buttonPressed)="mode = m.AddLoot" />

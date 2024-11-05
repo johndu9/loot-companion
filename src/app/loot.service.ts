@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_LOOTS, Loot, Player, Pool } from './loot.defs';
+import { DEFAULT_LOOTS, DEFAULT_POOLS, Loot, Player, Pool } from './loot.defs';
 import { BehaviorSubject } from 'rxjs';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 const LOOT_NAME = 'lootDefs';
 const POOL_NAME = 'poolDefs';
@@ -16,6 +18,11 @@ export enum ImportMode {
   UpdateAndAdd = 'Update and Add',
   AddNewLootOnly = 'Add New Loot Only',
   Override = 'Override'
+}
+
+export async function md(input: string) {
+  const output = await marked.parse(input);
+  return DOMPurify.sanitize(output, { ALLOWED_TAGS: ['p', 'span', 'em'] });
 }
 
 @Injectable({
@@ -56,29 +63,31 @@ export class LootService {
     this.players$.subscribe(players => this.saveDefs(PLAYER_NAME, players));
   }
 
-  private fromSourcePoolsToInitialPools(sourcePools: Pool[]): Pool[] {
-    const initiatePoolIndex = sourcePools.findIndex(p => p.name === 'Initiate');
-    const starterPoolIndex = sourcePools.findIndex(p => p.name === 'Starter');
-    const consumablePoolIndex = sourcePools.findIndex(p => p.name === 'Consumable');
-    const playerPool = new Pool('Loot Pool', [...sourcePools[initiatePoolIndex].loots, ...sourcePools[starterPoolIndex].loots]);
-    const consumablePool = new Pool('Consumable Pool', [...sourcePools[consumablePoolIndex].loots]);
-    const newSourcePools = this.replaceN(sourcePools,
-      [initiatePoolIndex, starterPoolIndex, consumablePoolIndex]
-      .map(i => { return { index: i, value: new Pool(sourcePools[i].name, []) }; }));
-    return [playerPool, consumablePool, ...newSourcePools];
-  }
-
   private lootsToSourcePools(loots: Loot[]): Pool[] {
     const sources = [...new Set(loots.map(l => l.sourcePool))];
-    return sources.map(s => new Pool(s, loots.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
+    return sources.map(s => new Pool(s, '', loots.reduce((acc: number[], l, i) => l.sourcePool === s ? [...acc, i] : acc, [])));
   }
 
   resetDefs() {
     const ls = DEFAULT_LOOTS;
-    const sourcePools = this.lootsToSourcePools(ls);
-    const initialPools = this.fromSourcePoolsToInitialPools(sourcePools);
+    const ps = DEFAULT_POOLS;
+    const lootIndexPairs = ls.map((l, i) => { return {l, i}; });
+    const populatedPools = ps.map(p => {
+      const loots = lootIndexPairs.filter(pair => {
+        if (p.name === 'Loot Pool') {
+          return ['Initiate', 'Starter'].includes(pair.l.sourcePool);
+        } else if (p.name === 'Consumable Pool') {
+          return pair.l.sourcePool === 'Consumable';
+        } else if (['Initiate', 'Starter', 'Consumable'].includes(p.name)) {
+          return false;
+        } else {
+          return pair.l.sourcePool === p.name;
+        }
+      }).map(pair => pair.i);
+      return {...p, loots} as Pool;
+    });
     this._loots.next(ls);
-    this._pools.next(initialPools);
+    this._pools.next(populatedPools);
     this._players.next([]);
   }
 
@@ -92,7 +101,7 @@ export class LootService {
       const newPool = Pool.addLoot(oldPool, lootIndex);
       this._pools.next(this.replace<Pool>(this.pools, poolIndex, newPool));
     } else {
-      this._pools.next([...this.pools, new Pool(loot.sourcePool, [lootIndex])]);
+      this._pools.next([...this.pools, new Pool(loot.sourcePool, '', [lootIndex])]);
     }
   }
 
@@ -169,11 +178,11 @@ export class LootService {
     this._players.next(this.replace<Player>(this.players, playerIndex, newPlayer));
   }
 
-  addPool(name: string) {
+  addPool(name: string, description: string = '') {
     if (this.pools.map(p => p.name).indexOf(name) >= 0) {
       console.error('Pool with name "' + name + '" already exists');
     } else {
-      this._pools.next([...this.pools, new Pool(name)]);
+      this._pools.next([...this.pools, new Pool(name, description)]);
     }
   }
 
@@ -278,15 +287,19 @@ export class LootService {
             const combinedLoots = [...this.loots, ...newLoots];
             const combinedSourcePools = this.lootsToSourcePools(combinedLoots);
             const newSourcePools = combinedSourcePools.filter(cp => this.pools.findIndex(p => cp.name === p.name) < 0);
+            const updatedNewSourcePools = newSourcePools.map(p => {
+              const newPool = appDef.poolDefs.find(np => np.name === p.name);
+              return {...newPool, loots: p.loots} as Pool;
+            })
             const updatedPools = this.pools.map(p => {
               if (newLootsPoolNames.includes(p.name)) {
                 const newLootFromPool = combinedLoots.reduce((acc: number[], l, i) => (l.sourcePool === p.name && i >= this.loots.length) ? [...acc, i] : acc, []);
-                return new Pool(p.name, [...p.loots, ...newLootFromPool]);
+                return {...p, loots: [...p.loots, ...newLootFromPool]} as Pool;
               } else {
                 return p;
               }
             });
-            const combinedPools = [...updatedPools, ...newSourcePools];
+            const combinedPools = [...updatedPools, ...updatedNewSourcePools];
             this._loots.next(combinedLoots);
             this._pools.next(combinedPools);
             break;
@@ -309,12 +322,14 @@ export class LootService {
             const newLoots = appDef.lootDefs.filter((l, i) => (newToCombinedMap.get(i) ?? 0) >= this.loots.length);
             const combinedLoots = [...this.loots, ...newLoots];
             // use appDef as source of truth for updating existing config
-            const updatedNewPools = appDef.poolDefs.map(p => new Pool(p.name, p.loots.map(l => newToCombinedMap.get(l) ?? 0)));
+            const updatedNewPools = appDef.poolDefs.map(p => {
+              return {...p, loots: p.loots.map(l => newToCombinedMap.get(l) ?? 0)} as Pool;
+            });
             const newPoolsLoots = new Set(updatedNewPools.flatMap(p => p.loots));
             const updatedOldPools = this.pools.map(op => {
               const newPoolLoots = updatedNewPools.find(np => np.name === op.name)?.loots ?? [];
               const oldPoolLoots = op.loots.filter(l => !newPoolsLoots.has(l));
-              return new Pool(op.name, [...oldPoolLoots, ...newPoolLoots]);
+              return {...op, loots: [...oldPoolLoots, ...newPoolLoots]} as Pool;
             });
             const onlyNewPools = updatedNewPools.filter(np => this.pools.findIndex(op => op.name === np.name) < 0);
             const combinedPools = [...updatedOldPools, ...onlyNewPools];
@@ -361,10 +376,10 @@ export class LootService {
       const lootToSource = lootIndices.filter(l => this.loots[l].sourcePool === sourcePool.name);
       return {
         index: sourceIndex,
-        value: new Pool(sourcePool.name, [...sourcePool.loots, ...lootToSource])
+        value: {...sourcePool, loots: [...sourcePool.loots, ...lootToSource]} as Pool
       };
     });
-    replaceValues.push({index: fromPoolIndex, value: new Pool(fromPool.name, [])});
+    replaceValues.push({index: fromPoolIndex, value: {...fromPool, loots: []} as Pool});
     return this.replaceN(this.pools, replaceValues);
   }
 

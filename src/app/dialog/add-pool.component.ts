@@ -20,6 +20,10 @@ export interface AddPoolData {
       <mat-label>Pool Name</mat-label>
       <input matInput formControlName="name" required />
     </mat-form-field>
+    <mat-form-field class="dialog-string" appearance="outline">
+      <mat-label>Pool Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
@@ -48,16 +52,21 @@ export class AddPoolDialogComponent {
     name: new FormControl(this.data.pool?.name ?? '', {
       validators: [Validators.required],
       nonNullable: true
-    })
+    }),
+    description: new FormControl(this.data.pool?.description ?? '', {})
   });
 
   get pool() {
     const value = this.poolForm.value;
     const hasPool = !!this.data.pool;
     if (hasPool) {
-      return {...this.data.pool, name: value.name} as Pool;
+      return {
+        ...this.data.pool,
+        name: value.name,
+        description: value.description
+      } as Pool;
     } else {
-      return new Pool(value.name ?? '');
+      return new Pool(value.name ?? '', value.description ?? '');
     }
   }
 }
