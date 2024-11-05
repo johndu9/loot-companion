@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +8,7 @@ import { Pool } from '../loot.defs';
 
 export interface AddPoolData {
   pool?: Pool;
+  pools: Pool[];
 }
 
 @Component({
@@ -48,9 +49,16 @@ export interface AddPoolData {
 export class AddPoolDialogComponent {
   readonly data = inject<AddPoolData>(MAT_DIALOG_DATA);
 
+  inPools: ValidatorFn = (control) => {
+    const name = (control as FormControl<string>).value;
+    const nameExists = this.data.pools.map(p => p.name).includes(name);
+    const sameName = this.data.pool ? this.data.pool.name === name : false;
+    return nameExists && !sameName ? { nameExists: true} : null;
+  }
+
   poolForm = new FormGroup({
     name: new FormControl(this.data.pool?.name ?? '', {
-      validators: [Validators.required],
+      validators: [Validators.required, this.inPools],
       nonNullable: true
     }),
     description: new FormControl(this.data.pool?.description ?? '', {})

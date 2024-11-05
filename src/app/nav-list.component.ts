@@ -7,8 +7,8 @@ import { LootService } from "./loot.service";
 import { Player, Pool } from "./loot.defs";
 import { Subject, combineLatest, takeUntil } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { AddPlayerDialogComponent } from "./dialog/add-player.component";
-import { AddPoolDialogComponent } from "./dialog/add-pool.component";
+import { AddPlayerData, AddPlayerDialogComponent } from "./dialog/add-player.component";
+import { AddPoolData, AddPoolDialogComponent } from "./dialog/add-pool.component";
 import { AddLootData, AddLootDialogComponent } from "./dialog/add-loot.component";
 import { ImportData, ImportDialogComponent } from "./dialog/import.component";
 import { ConfirmDialogComponent, ConfirmDialogData } from "./dialog/confirm-dialog.component";
@@ -82,7 +82,8 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPlayer() {
-    const dialogRef = this.dialog.open(AddPlayerDialogComponent, { data: {} });
+    const data: AddPlayerData = { pools: this.pools };
+    const dialogRef = this.dialog.open(AddPlayerDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const player = result as Player;
@@ -94,7 +95,8 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addPool() {
-    const dialogRef = this.dialog.open(AddPoolDialogComponent, { data: {} });
+    const data: AddPoolData = { pools: this.pools };
+    const dialogRef = this.dialog.open(AddPoolDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const pool = result as Pool;

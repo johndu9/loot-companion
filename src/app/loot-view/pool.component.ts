@@ -118,7 +118,7 @@ export class PoolComponent implements OnDestroy, OnInit, OnChanges {
   readonly dialog = inject(MatDialog);
 
   editPool() {
-    const data: AddPoolData = { pool: this.pool };
+    const data: AddPoolData = { pool: this.pool, pools: this.pools };
     const dialogRef = this.dialog.open(AddPoolDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

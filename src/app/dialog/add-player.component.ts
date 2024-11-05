@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +8,7 @@ import { Player, Pool } from '../loot.defs';
 
 export interface AddPlayerData {
   player?: Player;
-  pools?: Pool[];
+  pools: Pool[];
 }
 
 @Component({
@@ -45,9 +45,16 @@ export interface AddPlayerData {
 export class AddPlayerDialogComponent {
   readonly data = inject<AddPlayerData>(MAT_DIALOG_DATA);
 
+  inPools: ValidatorFn = (control) => {
+    const name = (control as FormControl<string>).value;
+    const nameExists = this.data.pools.map(p => p.name).includes(name);
+    const sameName = this.data.player ? this.data.player.name === name : false;
+    return nameExists && !sameName ? { nameExists: true} : null;
+  }
+
   playerForm = new FormGroup({
     name: new FormControl(this.data.player?.name ?? '', {
-      validators: [Validators.required],
+      validators: [Validators.required, this.inPools],
       nonNullable: true
     })
   });
@@ -58,7 +65,7 @@ export class AddPlayerDialogComponent {
     if (hasPlayer) {
       return {...this.data.player, name: value.name} as Player;
     } else {
-      return new Player(value.name ?? '', this.data.pools?.length ?? -1);
+      return new Player(value.name ?? '', this.data.pools.length);
     }
   }
 }
