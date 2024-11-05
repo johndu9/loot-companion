@@ -13,6 +13,7 @@ import { LootListInfoComponent } from "./common/loot-list-info.component";
 import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dialog.component";
 import { LootCardButtonInfo } from "./common/loot-card.component";
 import { AddPlayerData, AddPlayerDialogComponent } from "../dialog/add-player.component";
+import { TransferLootData, TransferLootDialogComponent } from "../dialog/transfer-loot.component";
 
 enum PlayerViewMode {
   ViewLoot,
@@ -21,7 +22,7 @@ enum PlayerViewMode {
 
 const useChargeButton: LootCardButtonInfo = {text: 'Use Charge', icon: 'bolt'};
 const restoreChargeButton: LootCardButtonInfo = {text: 'Restore Charge', icon: 'replay'};
-const removeButton: LootCardButtonInfo = {text: 'Remove', icon: 'remove', isWarn: true};
+const transferButton: LootCardButtonInfo = {text: 'Transfer', icon: 'move_item'};
 const addButton: LootCardButtonInfo = {text: 'Add', icon: 'add'};
 
 @Component({
@@ -112,13 +113,13 @@ export class PlayerComponent implements OnDestroy, OnInit {
           if (l.charged) {
             if (this.inPlayerPool[i]) {
               if (this.charged[i]) {
-                return [useChargeButton, removeButton];
+                return [useChargeButton, transferButton];
               } else {
-                return [restoreChargeButton, removeButton];
+                return [restoreChargeButton, transferButton];
               }
             }
           }
-          return [removeButton];
+          return [transferButton];
         })
       case PlayerViewMode.AddLoot:
         return new Array(this.loots.length).fill([addButton]);
@@ -141,9 +142,9 @@ export class PlayerComponent implements OnDestroy, OnInit {
           }
           break;
         }
-        case removeButton.text: {
+        case transferButton.text: {
           if (pi >= 0) {
-            this.removeLoot(event.index);
+            this.transferLoot(event.index);
           }
           break;
         }
@@ -178,6 +179,21 @@ export class PlayerComponent implements OnDestroy, OnInit {
 
   readonly dialog = inject(MatDialog);
 
+  transferLoot(lootIndex: number) {
+    const data: TransferLootData = {
+      loot: this.loots[lootIndex],
+      currentPool: this.pools[this.player.pool],
+      pools: this.pools
+    }
+    const dialogRef = this.dialog.open(TransferLootDialogComponent, { data });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const targetIndex = result as number;
+        this.lootService.moveLootToPool(lootIndex, targetIndex);
+      }
+    });
+  }
+
   editPlayer() {
     const data: AddPlayerData = { player: this.player, pools: this.pools };
     const dialogRef = this.dialog.open(AddPlayerDialogComponent, { data });
@@ -200,23 +216,6 @@ export class PlayerComponent implements OnDestroy, OnInit {
       if (result) {
         this.router.navigate(['']);
         this.lootService.removePlayer(this.playerIndex);
-      }
-    });
-  }
-
-  removeLoot(lootIndex: number) {
-    const loot = this.loots[lootIndex];
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
-      title: `Removing ${loot.name} from ${this.player.name}`,
-      description: 'Are you sure?',
-      buttonText: 'Remove',
-      isWarn: true
-    } as ConfirmDialogData });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.lootService.chargeLoot(lootIndex);
-        this.lootService.moveLootToPool(lootIndex, this.pools.findIndex(p => loot.sourcePool === p.name));
       }
     });
   }

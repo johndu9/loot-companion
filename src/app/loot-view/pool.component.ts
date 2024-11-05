@@ -14,13 +14,14 @@ import { ConfirmDialogComponent, ConfirmDialogData } from "../dialog/confirm-dia
 import { LootCardButtonInfo } from "./common/loot-card.component";
 import { AddPoolData, AddPoolDialogComponent } from "../dialog/add-pool.component";
 import { AsyncPipe } from "@angular/common";
+import { TransferLootData, TransferLootDialogComponent } from "../dialog/transfer-loot.component";
 
 enum PoolViewMode {
   ViewLoot,
   AddLoot
 }
 
-const removeButton: LootCardButtonInfo = {text: 'Remove', icon: 'remove', isWarn: true};
+const transferButton: LootCardButtonInfo = {text: 'Transfer', icon: 'move_item'};
 const addButton: LootCardButtonInfo = {text: 'Add', icon: 'add'};
 
 @Component({
@@ -91,19 +92,17 @@ export class PoolComponent implements OnDestroy, OnInit, OnChanges {
   modeToButtonInfos(mode: PoolViewMode): LootCardButtonInfo[][] {
     switch (mode) {
       case PoolViewMode.ViewLoot:
-        return this.loots.map(l => {
-          return l.sourcePool === this.pool.name ? [] : [removeButton];
-        });
+        return this.loots.map(() => [transferButton]);
       case PoolViewMode.AddLoot:
-        return new Array(this.loots.length).fill([addButton]);
+        return this.loots.map(() => [addButton]);
     }
   }
 
   onSelect(event: LootListButtonData) {
     if (this.pool) {
       switch (event.buttonText) {
-        case removeButton.text: {
-          this.removeLoot(event.index);
+        case transferButton.text: {
+          this.transferLoot(event.index);
           break;
         }
         case addButton.text: {
@@ -116,6 +115,21 @@ export class PoolComponent implements OnDestroy, OnInit, OnChanges {
   }
 
   readonly dialog = inject(MatDialog);
+
+  transferLoot(lootIndex: number) {
+    const data: TransferLootData = {
+      loot: this.loots[lootIndex],
+      currentPool: this.pool,
+      pools: this.pools
+    }
+    const dialogRef = this.dialog.open(TransferLootDialogComponent, { data });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const targetIndex = result as number;
+        this.lootService.moveLootToPool(lootIndex, targetIndex);
+      }
+    });
+  }
 
   editPool() {
     const data: AddPoolData = { pool: this.pool, pools: this.pools };
@@ -139,22 +153,6 @@ export class PoolComponent implements OnDestroy, OnInit, OnChanges {
       if (result) {
         this.router.navigate(['']);
         this.lootService.removePool(this.poolIndex);
-      }
-    });
-  }
-
-  removeLoot(lootIndex: number) {
-    const loot = this.loots[lootIndex];
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data: {
-      title: `Moving ${loot.name} from ${this.pool.name} to ${loot.sourcePool}`,
-      description: 'Are you sure?',
-      buttonText: 'Remove',
-      isWarn: true
-    } as ConfirmDialogData });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.lootService.moveLootToPool(lootIndex, this.pools.findIndex(p => loot.sourcePool === p.name));
       }
     });
   }
