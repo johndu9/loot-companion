@@ -5,7 +5,7 @@ import { MatListModule } from "@angular/material/list";
 import { Router } from "@angular/router";
 import { LootService } from "./loot.service";
 import { Player, Pool } from "./loot.defs";
-import { Subject, combineLatest, takeUntil } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import { AddPlayerData, AddPlayerDialogComponent } from "./dialog/add-player.component";
 import { AddPoolData, AddPoolDialogComponent } from "./dialog/add-pool.component";
@@ -30,17 +30,27 @@ export class NavListComponent implements OnDestroy, OnInit {
 
   players: Player[] = [];
   pools: Pool[] = [];
+  sources = new Set<string>();
   get nonPlayerPools() {
-    return this.pools.filter((pool, i) => !this.players.map(player => player.pool).includes(i));
+    const playerPools = this.players.map(player => player.pool);
+    return this.pools.filter((pool, i) => !playerPools.includes(i));
+  }
+  get sourcePools() {
+    return this.pools.filter(p => this.sources.has(p.name));
+  }
+  get collectionPools() {
+    return this.nonPlayerPools.filter(p => !this.sourcePools.includes(p));
+  }
+  get addablePools() {
+    return [...this.sourcePools, ...this.collectionPools.filter(p => p.loots.length === 0)];
   }
 
   constructor(private lootService: LootService, private router: Router) { }
 
   ngOnInit(): void {
-    combineLatest([this.lootService.players$, this.lootService.pools$]).pipe(takeUntil(this.unsubscribe$)).subscribe(([players, pools]) => {
-      this.players = players;
-      this.pools = pools;
-    });
+    this.lootService.players$.pipe(takeUntil(this.unsubscribe$)).subscribe(players => this.players = players);
+    this.lootService.pools$.pipe(takeUntil(this.unsubscribe$)).subscribe(pools => this.pools = pools);
+    this.lootService.loots$.pipe(takeUntil(this.unsubscribe$)).subscribe(loots => this.sources = new Set(loots.map(l => l.sourcePool)));
   }
 
   ngOnDestroy(): void {
@@ -72,7 +82,7 @@ export class NavListComponent implements OnDestroy, OnInit {
   }
 
   addLoot() {
-    const data: AddLootData = { poolNames: this.nonPlayerPools.map(p => p.name) };
+    const data: AddLootData = { poolNames: this.addablePools.map(p => p.name) };
     const dialogRef = this.dialog.open(AddLootDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
