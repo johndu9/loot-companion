@@ -39,10 +39,11 @@ export class LootCardComponent implements OnInit {
 
   get cardTraits(): string {
     if (this.loot.type === LootType.CONSUMABLE) {
-      return this.loot.type;
-    } else {
-      return (this.loot.type).concat(', ', this.loot.sourcePool);
+      if (this.loot.sourcePool !== 'Consumable') {
+        return `${this.loot.sourcePool} ${this.loot.type}`;
+      }
     }
+    return this.loot.sourcePool;
   }
 
   get hasBasic(): boolean {
