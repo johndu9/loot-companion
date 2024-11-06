@@ -8,6 +8,7 @@ import { Component } from '@angular/core';
 <div class="about">
   <span class="mat-body-medium"><a href="https://github.com/johndu9/loot-companion">GitHub Repository</a></span>
   <span class="mat-body-medium"><a href="https://gilarpgs.itch.io/loot-qs">LOOT Quickstart</a></span>
+  <span class="mat-body-medium"><a href="https://gilarpgs.itch.io/loot">LOOT</a></span>
 </div>
 `,
   styles: `
